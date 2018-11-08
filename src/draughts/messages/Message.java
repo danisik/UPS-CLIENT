@@ -5,6 +5,7 @@ import draughts.enums.*;
 
 public abstract class Message {
 	public Messages name = null;
+	private String message = "";
 	
 	@Override
 	public String toString() {
@@ -17,5 +18,13 @@ public abstract class Message {
 
 	public void setName(Messages name) {
 		this.name = name;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }

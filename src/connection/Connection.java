@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Arrays;
 
 import draughts.enums.*;
 import draughts.messages.*;
@@ -68,7 +69,7 @@ public class Connection {
 				message = new Server_Login_OK();
 				break;
 			case SERVER_LOGIN_FALSE:
-				message = new Server_Login_False();
+				message = new Server_Login_False(values[1]);
 				break;
 			case SERVER_START_GAME:
 				break;

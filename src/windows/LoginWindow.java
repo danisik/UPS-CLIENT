@@ -127,8 +127,9 @@ public class LoginWindow extends Window {
 			Message message = connection.read();
 			
 			if (message.name == Messages.SERVER_LOGIN_FALSE) {
-				alert.setHeaderText("This username is already used");
-				alert.setContentText("This username is already used by another player. Please select different username.");
+				
+				alert.setHeaderText(message.getMessage());
+				alert.setContentText(message.getMessage());
 				alert.show();
 			}
 			else {
