@@ -2,6 +2,7 @@ package windows;
 
 import java.io.FileNotFoundException;
 
+import connection.Client;
 import connection.Connection;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -14,9 +15,9 @@ public abstract class Window extends Stage {
 	protected Stage primaryStage;
 	protected int stageWidth = 0;
 	protected int stageHeight = 0;
-	protected Boolean logged = false;
 	protected Connection connection = null;
-
+	protected Client client = null;
+	
 	protected Stage createStage(Stage stage) {
 		return null;		
 	}
@@ -72,14 +73,6 @@ public abstract class Window extends Stage {
 	public void showStage() {
 		this.primaryStage.show();
 	}
-	
-	public Boolean getLogged() {
-		return logged;
-	}
-
-	public void setLogged(Boolean logged) {
-		this.logged = logged;
-	}
 
 	public Connection getSender() {
 		return connection;
@@ -87,6 +80,14 @@ public abstract class Window extends Stage {
 
 	public void setSender(Connection sender) {
 		this.connection = sender;
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
 	}
 
 }

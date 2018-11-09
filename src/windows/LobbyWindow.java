@@ -30,8 +30,12 @@ import draughts.piece.*;
 public class LobbyWindow extends Window {
 	
 	Label nameOfGame = new Label(Constants.gameTitle);
+	Label nameOfPlayer = new Label();
+	Label name = new Label("Your name: ");
+	Button play = new Button("Play");
 	
 	public LobbyWindow(Window window, Stage stage) {
+		this.window = window;
 		this.setControlParameters();
 		this.setClassVariables(window, Constants.stageWidthLobby, Constants.stageHeightLobby);
 		this.primaryStage = createStage(stage);
@@ -64,28 +68,27 @@ public class LobbyWindow extends Window {
 		lobbyPane.setHgap(5);
 		lobbyPane.setVgap(5);
 		
-		lobbyPane.add(nameOfGame, 20, 1, 1, 1);	
+		lobbyPane.add(nameOfGame, 6, 1, 1, 1);
+		lobbyPane.add(name, 5, 6, 1, 1);
+		lobbyPane.add(nameOfPlayer, 6, 6, 1, 1);
+		lobbyPane.add(play, 6, 7, 1, 1);
 		return lobbyPane;
 	}
 	
-	public void setControlParameters() {	
+	public void setControlParameters() {
+		play.setMaxWidth(75);
 		nameOfGame.setFont(new Font(20));
-//		
-//		//nameOfGame.setTextFill(javafx.scene.paint.Color.web(Color.Red.getHexColor()));
-//		
-//		login.setMaxWidth(75);
-//		login.setOnAction(event -> 
-//		{
-//			Alert alert = new Alert(AlertType.WARNING);
-//			alert.setHeaderText("This name is used");
-//			alert.setContentText("This name is used by another player, please select different name.");
-//			alert.show();
-//		});
-//		
+		nameOfPlayer.setFont(new Font(20));
+		nameOfPlayer.setText(window.getClient().getName());		
+		nameOfPlayer.setTextFill(javafx.scene.paint.Color.web(Color.Blue.getHexColor()));
+		
+		play.setOnAction(event -> {
+			play();
+		});
 	}
 	
-	@Override
-	public void setEvents() {
-		
+	public void play() {
+		connection.write(new Server_Start_Game());
+		Message message = connection.read();
 	}
 }

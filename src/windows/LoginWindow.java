@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import javax.swing.text.Position;
 
+import connection.Client;
 import connection.Connection;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -35,11 +36,6 @@ public class LoginWindow extends Window {
 	Button login = new Button(Constants.buttonLogin);
 	TextField enterName = new TextField();
 	
-	Label currentStatus = new Label(Constants.currentStatus);
-	Label onlinePlayers = new Label(Constants.onlinePlayers);
-	
-	String  pass = "ahoj";
-	
 	public LoginWindow(Window window, Stage stage) {
 		this.setControlParameters();
 		this.setClassVariables(window, Constants.stageWidthLogin, Constants.stageHeightLogin);
@@ -47,7 +43,7 @@ public class LoginWindow extends Window {
 		this.setEvents();
 		this.primaryStage.setResizable(false);
 		this.connection = new Connection();
-		connection.connect();
+		this.window = this;
 	}
 
 	@Override
@@ -81,9 +77,6 @@ public class LoginWindow extends Window {
 		loginPane.add(loginLabel, 5, 6, 1, 1);
 		loginPane.add(enterName, 6, 6, 1, 1);
 		loginPane.add(login, 6, 7, 1, 1);
-		loginPane.add(currentStatus, 6, 16, 1, 1);
-		loginPane.add(onlinePlayers, 6, 17, 1, 1);
-		
 		return loginPane;
 	}
 	
@@ -111,7 +104,17 @@ public class LoginWindow extends Window {
 		
 	}
 	private void login() {
+		Boolean serverON = connection.connect();
 		Alert alert = new Alert(AlertType.WARNING);
+		
+		if (!serverON) {
+			alert.setAlertType(AlertType.ERROR);
+			alert.setHeaderText("Server is currently offline");
+			alert.setContentText("Server is currently offline");
+			alert.show();
+			return;
+		}
+		
 		if (enterName.getText().length() < 1) {
 			alert.setHeaderText("Username was not set");
 			alert.setContentText("Username was not set. Please set your username.");
@@ -132,13 +135,12 @@ public class LoginWindow extends Window {
 				alert.setContentText(message.getMessage());
 				alert.show();
 			}
-			else {
-				this.setLogged(true);
-			
+			else {			
 				alert = new Alert(AlertType.INFORMATION);
 				alert.setHeaderText("Login was successful");
 				alert.setContentText("Login was successful.");
-				alert.show();	
+				alert.show();
+				window.setClient(new Client(enterName.getText()));
 				window = new LobbyWindow(window, primaryStage);
 				window.showStage();	
 			}
