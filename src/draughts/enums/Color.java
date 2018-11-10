@@ -1,8 +1,8 @@
 package draughts.enums;
 
 public enum Color {
-	Black("black"), 
-	White("white"),
+	Black("black", "#000000"), 
+	White("white", "#ffffff"),
 	Red("red", "#f44242"),
 	Green("green", "#5c9952"),
 	Blue("blue", "#4c02f9")
@@ -36,5 +36,17 @@ public enum Color {
 
 	public void setHexColor(String hexColor) {
 		this.hexColor = hexColor;
+	}
+	
+	public static Color getColor(String color) {
+		Color clr = null;
+		for(Color cl : Color.values()) {
+			if (cl.name.equals(color)) {
+				clr = cl;
+				break;
+			}
+		}
+		
+		return clr;
 	}
 }

@@ -6,6 +6,7 @@ import draughts.enums.*;
 public abstract class Message {
 	public Messages name = null;
 	private String message = "";
+	private Color color = null;
 	
 	@Override
 	public String toString() {
@@ -26,5 +27,13 @@ public abstract class Message {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 }

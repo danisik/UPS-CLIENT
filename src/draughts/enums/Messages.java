@@ -7,7 +7,8 @@ public enum Messages {
 	SERVER_LOGIN_OK("login_ok"),
 	SERVER_LOGIN_FALSE("login_false"),
 	
-	SERVER_START_GAME("start"),
+	CLIENT_PLAY_GAME("play"),
+	SERVER_START_GAME("start_game"),
 	
 	SERVER_MOVE("server_move"),
 	CLIENT_MOVE("client_move"),

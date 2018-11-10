@@ -72,6 +72,8 @@ public class Connection {
 				message = new Server_Login_False(values[1]);
 				break;
 			case SERVER_START_GAME:
+				Color color = Color.getColor(values[1]);
+				message = new Server_Start_Game(color);
 				break;
 			case SERVER_MOVE:
 				break;

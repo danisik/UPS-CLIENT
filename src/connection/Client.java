@@ -7,10 +7,13 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.CharBuffer;
+
+import draughts.enums.Color;
 import windows.*;
 
 public class Client {
 	private String name = "";
+	private Color color = null;
 	
 	public Client(String name) {
 		this.name = name;
@@ -22,5 +25,13 @@ public class Client {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 }

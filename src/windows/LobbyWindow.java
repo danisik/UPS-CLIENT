@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import javax.swing.text.Position;
 
+import connection.Client;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -88,7 +89,20 @@ public class LobbyWindow extends Window {
 	}
 	
 	public void play() {
-		connection.write(new Server_Start_Game());
-		Message message = connection.read();
+		//check if server is on
+		Alert alert = new Alert(AlertType.ERROR);
+		
+		this.window.connection.write(new Client_Play_Game());
+		Message message = this.window.connection.read();
+		
+		if (message.name == Messages.SERVER_START_GAME) {
+			window = new BoardWindow(window, primaryStage, message.getColor());
+			window.showStage();	
+		}
+		else {
+			alert.setHeaderText("ERROR");
+			alert.setContentText("ERROR");
+			alert.show();
+		}
 	}
 }

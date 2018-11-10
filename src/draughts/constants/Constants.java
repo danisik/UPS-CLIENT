@@ -13,8 +13,8 @@ public class Constants {
 	public static final String pieceSeparator = "_";
 	
 	//BoardWindow constants
-	public static final int stageWidthBoard = 800;
-	public static final int stageHeightBoard = 590;
+	public static final int stageWidthBoard = 900;
+	public static final int stageHeightBoard = 600;
 	
 	public static final String playerOpponent = "Opponent";
 	public static final String playerYou = "You";

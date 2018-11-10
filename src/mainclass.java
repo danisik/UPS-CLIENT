@@ -32,7 +32,7 @@ public class mainclass extends Application {
 		primaryWindow = new LoginWindow(primaryWindow, stage);
 		primaryWindow.showStage();
 		
-//		primaryWindow = new BoardWindow(primaryWindow, stage);
+//		primaryWindow = new BoardWindow(primaryWindow, stage, draughts.enums.Color.White);
 //		primaryWindow.showStage();
 		
 		
