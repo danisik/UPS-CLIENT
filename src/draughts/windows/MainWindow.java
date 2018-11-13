@@ -1,6 +1,5 @@
 package draughts.windows;
 
-import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -26,7 +25,6 @@ import draughts.enums.*;
 import draughts.field.*;
 import draughts.messages.*;
 import draughts.piece.*;
-import draughts.windows.*;
 
 public class MainWindow {
 	
@@ -34,6 +32,7 @@ public class MainWindow {
 	private Stage primaryStage;
 	private Connection connection = null;
 	private Client client = null;
+	private int game_ID = -1;
 	
 	//login
 	Label nameOfGame = new Label(Constants.gameTitle);
@@ -67,7 +66,6 @@ public class MainWindow {
 	Label infoTypeColor = new Label("type: NA, color: NA");
 	Label infoPlayerColor = new Label();
 	Label infoPlayerName = new Label();
-	Button endMove;
 	//10x10 board, 4x5 pieces per player, white starts, pieces starts staying on black field
 	int piecesCountPerRow = 5;
 	int piecesRow = 4;
@@ -161,7 +159,7 @@ public class MainWindow {
 		return stage;
 	}
 	
-	public Stage createBoardStage(Stage stage) {
+	public Stage createBoardStage(Stage stage, int game_ID) {
 		infoPlayerColor.setText("Your color is: " + client.getColor().toString());
 		infoPlayerColor.setTextFill(javafx.scene.paint.Color.web(client.getColor().getHexColor()));
 		infoPlayerColor.setFont(new Font(15));
@@ -198,21 +196,12 @@ public class MainWindow {
 		info.setVgap(20);
 		
 		nowPlaying = new Label("Now playing: " + player);
-		endMove = new Button(Constants.endMove);
-		
-		endMove.setOnAction(event -> 
-		{
-			if (player.equals(Constants.playerYou)) player = Constants.playerOpponent;
-			else player = Constants.playerYou;
-			nowPlaying.setText(Constants.nowPlaying + player);
-		});
 		
 		info.add(infoPlayerName, 1, 2);
 		info.add(infoPlayerColor, 1, 3);
 		info.add(infoRowCol, 1, 5);
 		info.add(infoTypeColor, 1, 6);
 		info.add(nowPlaying, 1, 12);
-		info.add(endMove, 1, 13);
 		
 		
 		BorderPane root = new BorderPane();
@@ -223,7 +212,7 @@ public class MainWindow {
 		
 		Scene scene = new Scene(root, Constants.stageWidthBoard, Constants.stageHeightBoard);
 		stage.setScene(scene);
-		stage.setTitle(Constants.gameTitle);
+		stage.setTitle(Constants.gameTitle + " - Game: " + game_ID);
 		
 		return stage;
 	}
@@ -233,7 +222,7 @@ public class MainWindow {
 	//-----------------------------------------
 	
 	private void generateFields() {
-		//10x10, starts with white (start is on top)
+		//10x10, starts with black (start is on top)
 				
 		for(int i = 0; i < fieldsCount; i++) {
 			for(int j = 0; j < fieldsCount; j++) {
@@ -241,35 +230,12 @@ public class MainWindow {
 				ImageView view = new ImageView();
 				Color fieldColor = null;
 				
-				final int col = i;
 				final int row = j;
+				final int col = i;
 				
 				view.setOnMouseClicked(event -> 
 				{
-					if(clickedField != null && fields.getField(row, col).getRow() == clickedField.getRow() 
-							&& fields.getField(row, col).getCol() == clickedField.getCol()) {
-						clickedField = null;
-						infoRowCol.setText("row: NA, col: NA");
-						infoTypeColor.setText("type: NA, color: NA");
-					}
-					else {
-						clickedField = fields.getField(row, col);
-						
-						Piece piece = clickedField.getPiece();
-						String typeName = "";
-						String colorName = "";
-						if (piece == null) {
-							typeName = "NA";
-							colorName = "NA";
-						}
-						else {
-							typeName = piece.getType().geTypeName();
-							colorName = piece.getColor().geColorName();
-						}
-						
-						infoRowCol.setText("row: " + row + ", col: " + col);
-						infoTypeColor.setText("type: " + typeName + ", color: " + colorName);
-					}
+					fieldClicked(row, col);
 				});
 				
 				if((i+j) % 2 == 0) {
@@ -322,7 +288,7 @@ public class MainWindow {
 	}
 	
 	//-----------------------------------------
-	//--------------FUNC-METHODS---------------
+	//-----------CONNECT-METHODS---------------
 	//-----------------------------------------	
 	
 	private void login() {
@@ -383,17 +349,49 @@ public class MainWindow {
 		else connection.write(new Client_Play_Game());
 	}
 	
-	public void processPlay(Message message) {
+	public void processPlay(Message message, int game_ID) {
 		Alert alert = new Alert(AlertType.ERROR);
 		
 		if (message.name == Messages.SERVER_START_GAME) {
 			client.setColor(message.getColor());
-			primaryStage = createBoardStage(primaryStage);
+			this.game_ID = game_ID;
+			primaryStage = createBoardStage(primaryStage, this.game_ID);
 		}
 		else {
 			alert.setHeaderText("ERROR");
 			alert.setContentText("ERROR");
 			alert.show();
+		}
+	}
+	
+	//------------------------------------------
+	//---------------FUNC-METHOD----------------
+	//------------------------------------------
+	
+	public void fieldClicked(int row, int col) {
+		if(clickedField != null && fields.getField(row, col).getRow() == clickedField.getRow() 
+				&& fields.getField(row, col).getCol() == clickedField.getCol()) {
+			clickedField = null;
+			infoRowCol.setText("row: NA, col: NA");
+			infoTypeColor.setText("type: NA, color: NA");
+		}
+		else {
+			clickedField = fields.getField(row, col);
+			
+			Piece piece = clickedField.getPiece();
+			String typeName = "";
+			String colorName = "";
+			if (piece == null) {
+				typeName = "NA";
+				colorName = "NA";
+			}
+			else {
+				typeName = piece.getType().geTypeName();
+				colorName = piece.getColor().geColorName();
+			}
+			
+			infoRowCol.setText("row: " + row + ", col: " + col);
+			infoTypeColor.setText("type: " + typeName + ", color: " + colorName);
 		}
 	}
 }

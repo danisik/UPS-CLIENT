@@ -73,13 +73,15 @@ public class Reader implements Runnable {
 				break;
 			case SERVER_LOGIN_FALSE:
 				Platform.runLater(() -> {
-					mainWindow.processLogin(new Server_Login_False(values[1]));
+					String errMessage = values[1];
+					mainWindow.processLogin(new Server_Login_False(errMessage));
 				});
 				break;
 			case SERVER_START_GAME:
 				Platform.runLater(() -> {
 					Color color = Color.getColor(values[1]);
-					mainWindow.processPlay(new Server_Start_Game(color));
+					int game_ID = Integer.parseInt(values[2]);
+					mainWindow.processPlay(new Server_Start_Game(color), game_ID);
 				});
 				break;
 			case SERVER_MOVE:

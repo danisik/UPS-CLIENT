@@ -77,12 +77,4 @@ public class Connection {
 	public void setConnected(Boolean connected) {
 		this.connected = connected;
 	}
-
-	public Reader getReader() {
-		return reader;
-	}
-
-	public void setReader(Reader reader) {
-		this.reader = reader;
-	}
 }
