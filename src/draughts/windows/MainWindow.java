@@ -89,6 +89,7 @@ public class MainWindow {
 	//-----------------------------------------
 	
 	public Stage createLoginStage(Stage stage) {
+		stage = onCloseEvent(stage);
 		nameOfGame.setFont(new Font(20));
 		
 		//nameOfGame.setTextFill(javafx.scene.paint.Color.web(Color.Red.getHexColor()));
@@ -130,6 +131,7 @@ public class MainWindow {
 	}	
 	
 	public Stage createLobbyStage(Stage stage) {
+		stage = onCloseEvent(stage);
 		play.setMaxWidth(75);
 		nameOfGame.setFont(new Font(20));
 		nameOfPlayer.setFont(new Font(20));
@@ -160,6 +162,8 @@ public class MainWindow {
 	}
 	
 	public Stage createBoardStage(Stage stage, int game_ID) {
+		stage = onCloseEvent(stage);
+		
 		infoPlayerColor.setText("Your color is: " + client.getColor().toString());
 		infoPlayerColor.setTextFill(javafx.scene.paint.Color.web(client.getColor().getHexColor()));
 		infoPlayerColor.setFont(new Font(15));
@@ -226,7 +230,6 @@ public class MainWindow {
 				
 		for(int i = 0; i < fieldsCount; i++) {
 			for(int j = 0; j < fieldsCount; j++) {
-				//board.add(new Button(i + " " + j), i, j);
 				ImageView view = new ImageView();
 				Color fieldColor = null;
 				
@@ -367,6 +370,13 @@ public class MainWindow {
 	//------------------------------------------
 	//---------------FUNC-METHOD----------------
 	//------------------------------------------
+	
+	public Stage onCloseEvent(Stage stage) {
+		stage.setOnCloseRequest(event -> {
+		    System.exit(0);
+		});
+		return stage;
+	}
 	
 	public void fieldClicked(int row, int col) {
 		if(clickedField != null && fields.getField(row, col).getRow() == clickedField.getRow() 

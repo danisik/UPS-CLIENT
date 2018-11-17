@@ -20,10 +20,12 @@ public class Reader implements Runnable {
 	private BufferedReader reader = null;
 	private Message receivedMessage = null;
 	private MainWindow mainWindow = null;
+	private Connection connection = null;
 	
-	public Reader(Socket socket, MainWindow mainWindow) {
+	public Reader(Socket socket, MainWindow mainWindow, Connection connection) {
 		try {
 			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			this.connection = connection;
 		} catch (IOException e) {
 			//e.printStackTrace();
 		}
@@ -44,6 +46,7 @@ public class Reader implements Runnable {
 					//error - chyba spojení
 				}
 			} catch (Exception e) {
+				connection.connect(mainWindow);
 				e.printStackTrace();
 				//
 			}	

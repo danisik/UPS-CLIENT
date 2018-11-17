@@ -1,13 +1,8 @@
 package draughts.connection;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 import draughts.enums.*;
 import draughts.messages.*;
@@ -43,7 +38,7 @@ public class Connection {
 		try {
 			socket = new Socket(address, localPort);	
 			
-			reader = new Reader(socket, mainWindow);
+			reader = new Reader(socket, mainWindow, this);
 			threadReader = new Thread(reader);
 			threadReader.start();
 			
