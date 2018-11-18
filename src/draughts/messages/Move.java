@@ -21,6 +21,10 @@ public class Move extends Message {
 	private int rowDestination = -1;
 	/* destination col position of piece */
 	private int colDestination = -1;
+	/* color of piece */
+	private String color = "";
+	/* type of piece */
+	private String piece = "";
 	
 	/*  server -> client */
 	public Move(int GID, int killed_opponent, int promote) {
@@ -31,13 +35,16 @@ public class Move extends Message {
 	}
 	
 	/* client -> server */
-	public Move(int GID, int rowCurrent, int colCurrent, int rowDestination, int colDestination) {
-		this.name = Messages.SERVER_MOVE;
+	public Move(int GID, int rowCurrent, int colCurrent, int rowDestination, int colDestination, 
+			String color, String piece) {
+		this.name = Messages.CLIENT_MOVE;
 		this.GID = GID;
 		this.rowCurrent = rowCurrent;
 		this.colCurrent = colCurrent;
 		this.rowDestination = rowDestination;
 		this.colDestination = colDestination;
+		this.color = color;
+		this.piece = piece;
 	}
 	
 	public String toStringServer() {
@@ -46,10 +53,11 @@ public class Move extends Message {
 	}
 	
 	//prikaz,gid,rowC_colC_rowD_colD
-	public String toStringClient() {
+	public String toString() {
 		return this.name.toString() + Constants.valueSeparator + this.GID + Constants.valueSeparator + this.rowCurrent 
-				+ Constants.pieceSeparator + this.colCurrent + Constants.pieceSeparator + this.rowDestination
-				+ Constants.pieceSeparator + this.colDestination + Constants.valueSeparator;
+				+ Constants.valueSeparator + this.colCurrent + Constants.valueSeparator + this.rowDestination
+				+ Constants.valueSeparator + this.colDestination + Constants.valueSeparator
+				+ this.color + Constants.valueSeparator + this.piece;
 	}
 	
 	public int getGID() {

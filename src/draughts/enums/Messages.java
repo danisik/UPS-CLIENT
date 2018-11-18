@@ -14,7 +14,8 @@ public enum Messages {
 	CLIENT_MOVE("client_move"),
 	SERVER_INCORRECT_MOVE("incorrect_move"),
 	CLIENT_END_MOVE("end_move"),
-	
+
+	SERVER_UPDATE_GAME_ID("update_game_ID"),
 	SERVER_PLAY_NEXT_PLAYER("play_next_player"),
 	
 	SERVER_END_GAME("end_game"),

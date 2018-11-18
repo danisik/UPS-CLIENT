@@ -10,7 +10,7 @@ public class Constants {
 	
 	//separators
 	public static final String valueSeparator = ";";
-	public static final String pieceSeparator = "_";
+	public static final String pieceSeparator = ",";
 	
 	//BoardWindow constants
 	public static final int stageWidthBoard = 900;

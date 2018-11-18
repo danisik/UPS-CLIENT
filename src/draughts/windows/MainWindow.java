@@ -34,6 +34,12 @@ public class MainWindow {
 	private Client client = null;
 	private int game_ID = -1;
 	
+	private Boolean firstClicked = false;
+	private int firstRow = -1;
+	private int firstCol = -1;
+	private String firstColor = "";
+	private String firstPiece = "";
+	
 	//login
 	Label nameOfGame = new Label(Constants.gameTitle);
 	Label loginLabel = new Label(Constants.loginName);
@@ -60,7 +66,7 @@ public class MainWindow {
 	private static Image imgBlackWhiteKing = null;
 	
 	GridPane board = new GridPane();
-	String player = Constants.playerYou;
+	String player = null;
 	Label nowPlaying;
 	Label infoRowCol = new Label("row: NA, col: NA");
 	Label infoTypeColor = new Label("type: NA, color: NA");
@@ -199,6 +205,10 @@ public class MainWindow {
 		info.setHgap(60);
 		info.setVgap(20);
 		
+		if (client.getColor().toString().equals(draughts.enums.Color.White.toString())) {
+			player = Constants.playerYou;
+		}
+		else player = Constants.playerOpponent;
 		nowPlaying = new Label("Now playing: " + player);
 		
 		info.add(infoPlayerName, 1, 2);
@@ -216,7 +226,7 @@ public class MainWindow {
 		
 		Scene scene = new Scene(root, Constants.stageWidthBoard, Constants.stageHeightBoard);
 		stage.setScene(scene);
-		stage.setTitle(Constants.gameTitle + " - Game: " + game_ID);
+		stage.setTitle(Constants.gameTitle);
 		
 		return stage;
 	}
@@ -297,13 +307,13 @@ public class MainWindow {
 	private void login() {
 		Alert alert = new Alert(AlertType.WARNING);
 		String name = enterName.getText();
-		
+		connection.connect(this);
 		if (!connection.getConnected()) {
 			alert.setAlertType(AlertType.ERROR);
 			alert.setHeaderText("Server is currently offline");
 			alert.setContentText("Server is currently offline");
 			alert.show();
-			connection.connect(this);
+			return;
 		}
 		
 		if (name.length() < 1) {
@@ -379,11 +389,21 @@ public class MainWindow {
 	}
 	
 	public void fieldClicked(int row, int col) {
+		
+		if (player.equals(Constants.playerOpponent)) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setHeaderText("Now playing opponent");
+			alert.setContentText("You can't perform move, because opponent now playing");
+			alert.show();
+			return;
+		}
+		
 		if(clickedField != null && fields.getField(row, col).getRow() == clickedField.getRow() 
 				&& fields.getField(row, col).getCol() == clickedField.getCol()) {
 			clickedField = null;
 			infoRowCol.setText("row: NA, col: NA");
 			infoTypeColor.setText("type: NA, color: NA");
+			firstClicked = false;
 		}
 		else {
 			clickedField = fields.getField(row, col);
@@ -402,6 +422,26 @@ public class MainWindow {
 			
 			infoRowCol.setText("row: " + row + ", col: " + col);
 			infoTypeColor.setText("type: " + typeName + ", color: " + colorName);
+			
+			if (firstClicked) {
+				connection.write(new Move(game_ID, firstRow, firstCol, row, col, firstColor, firstPiece));				
+				firstRow = -1;
+				firstCol = -1;
+				firstClicked = false;
+				firstColor = "";
+				firstPiece = "";
+			}
+			else {
+				firstClicked = true;
+				firstRow = row;
+				firstCol = col;
+				firstColor = colorName;
+				firstPiece = typeName;
+			}
 		}
+	}
+	
+	public void updateGameID(int game_ID) {
+		this.game_ID = game_ID;
 	}
 }

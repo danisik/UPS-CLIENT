@@ -15,7 +15,7 @@ public class Connection {
 	private String address = "127.0.0.1";
 	private InetAddress inetAddr = null;
 	private int localPort = 10000;
-	
+	private MainWindow mainWindow = null;
 	private OutputStreamWriter writer = null;
 	
 	private Reader reader = null;
@@ -36,6 +36,7 @@ public class Connection {
 	
 	public void connect(MainWindow mainWindow) {
 		try {
+			this.mainWindow = mainWindow;
 			socket = new Socket(address, localPort);	
 			
 			reader = new Reader(socket, mainWindow, this);
@@ -60,7 +61,11 @@ public class Connection {
 			writer.flush();
 			System.out.println("Writed message: " + message.toString());
 		} 
+		catch (NullPointerException e) {
+			System.out.println("No message send");
+		}
 		catch (Exception e) {
+			connect(mainWindow);
 			e.printStackTrace();
 		}
 	}

@@ -87,6 +87,10 @@ public class Reader implements Runnable {
 					mainWindow.processPlay(new Server_Start_Game(color), game_ID);
 				});
 				break;
+			case SERVER_UPDATE_GAME_ID:
+					int game_ID = Integer.parseInt(values[1]);
+					mainWindow.updateGameID(game_ID);
+				break;
 			case SERVER_MOVE:
 				break;
 			case SERVER_INCORRECT_MOVE:
