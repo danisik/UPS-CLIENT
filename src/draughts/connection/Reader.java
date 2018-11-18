@@ -67,8 +67,6 @@ public class Reader implements Runnable {
 		String[] values = stringMessage.split(";");
 		Messages messages = Messages.getMessageByName(values[0]);
 		switch(messages) {
-			case SERVER_ONLINE_PLAYERS:
-				break;
 			case SERVER_LOGIN_OK:
 				Platform.runLater(() -> {
 					mainWindow.processLogin(new Server_Login_OK());
@@ -91,9 +89,16 @@ public class Reader implements Runnable {
 					int game_ID = Integer.parseInt(values[1]);
 					mainWindow.updateGameID(game_ID);
 				break;
-			case SERVER_MOVE:
+			case SERVER_CORRECT_MOVE:
+				Platform.runLater(() -> {
+					mainWindow.correct();
+				});
 				break;
-			case SERVER_INCORRECT_MOVE:
+			case SERVER_WRONG_MOVE:
+				Platform.runLater(() -> {
+					String errMessage = values[1];
+					mainWindow.incorrect(errMessage);
+				});
 				break;
 			case SERVER_PLAY_NEXT_PLAYER:
 				break;

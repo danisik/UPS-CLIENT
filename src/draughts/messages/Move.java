@@ -28,7 +28,7 @@ public class Move extends Message {
 	
 	/*  server -> client */
 	public Move(int GID, int killed_opponent, int promote) {
-		this.name = Messages.SERVER_MOVE;
+		this.name = Messages.SERVER_CORRECT_MOVE;
 		this.GID = GID;
 		this.killed_opponent = killed_opponent;
 		this.promote = promote;
@@ -57,7 +57,7 @@ public class Move extends Message {
 		return this.name.toString() + Constants.valueSeparator + this.GID + Constants.valueSeparator + this.rowCurrent 
 				+ Constants.valueSeparator + this.colCurrent + Constants.valueSeparator + this.rowDestination
 				+ Constants.valueSeparator + this.colDestination + Constants.valueSeparator
-				+ this.color + Constants.valueSeparator + this.piece;
+				+ this.color + Constants.valueSeparator + this.piece + Constants.valueSeparator;
 	}
 	
 	public int getGID() {

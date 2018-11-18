@@ -359,7 +359,11 @@ public class MainWindow {
 			//this.primaryStage.close();
 			return;
 		}
-		else connection.write(new Client_Play_Game());
+		else {
+			connection.write(new Client_Play_Game());
+			play.setDisable(true);
+			play.setText("Queued");
+		}
 	}
 	
 	public void processPlay(Message message, int game_ID) {
@@ -443,5 +447,19 @@ public class MainWindow {
 	
 	public void updateGameID(int game_ID) {
 		this.game_ID = game_ID;
+	}
+	
+	public void correct() {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setHeaderText("Correct move!");
+		alert.setContentText("Correct move!");
+		alert.show();
+	}
+	
+	public void incorrect(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText(message);
+		alert.setContentText(message);
+		alert.show();
 	}
 }
