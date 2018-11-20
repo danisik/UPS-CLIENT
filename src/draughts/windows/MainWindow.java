@@ -491,4 +491,13 @@ public class MainWindow {
 		this.player = player;
 		this.nowPlaying.setText("Now playing: " + player);
 	}
+	
+	public void nowPlayingYou() {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText("You are on move");
+		alert.setContentText("You are on move");
+		alert.setResizable(true);
+		alert.setWidth(alert.getWidth() + 200);
+		alert.show();
+	}
 }

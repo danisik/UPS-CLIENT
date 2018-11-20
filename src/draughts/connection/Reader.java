@@ -125,6 +125,7 @@ public class Reader implements Runnable {
 			case SERVER_PLAY_NEXT_PLAYER:
 				Platform.runLater(() -> {
 					mainWindow.setPlayer(Constants.playerYou);
+					//mainWindow.nowPlayingYou();
 				});
 				break;
 			case SERVER_END_GAME:

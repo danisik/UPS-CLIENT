@@ -9,7 +9,8 @@ public enum Wrong_Messages {
 	DESTROY_MY_PIECE(5, "You can't destroy your piece"),
 	HOP_TWO_FIELDS(6, "You can't move by 2 fields when you do not hop over opponents piece"),
 	NOT_EMPTY_FIELD(7, "You can't move to fields, because other piece is here"),
-	HOP_MORE_FIELDS(8, "You can move your man by only 1 field per move")
+	HOP_MORE_FIELDS(8, "You can move your man by only 1 field per move"),
+	DESTROY_PIECE(9, "If you can destroy opponents piece, do it")
 	;
 	
 	private int ID;
