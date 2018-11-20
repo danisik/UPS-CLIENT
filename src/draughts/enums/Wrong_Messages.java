@@ -2,7 +2,6 @@ package draughts.enums;
 
 public enum Wrong_Messages {
 	
-	BAD_COLOR_OR_TYPE(0, "Color or type is NA"),
 	OPPONNENTS_PIECE(1, "You can't move opponents piece"),
 	ONLY_DIAGONALLY(2, "You can move only diagonally"),
 	NO_PIECE(3, "You did not select any your piece"),

@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import draughts.connection.*;
 import draughts.constants.*;
@@ -80,8 +81,8 @@ public class MainWindow {
 	Field clickedField = null;
 	Message message = null;
 	
-	public MainWindow(Stage stage) {
-		this.connection = new Connection();
+	public MainWindow(Stage stage, List<String> args) {
+		this.connection = new Connection(args);
 		this.connection.connect(this);
 		this.primaryStage = createLoginStage(stage);
 	}
@@ -312,6 +313,7 @@ public class MainWindow {
 			alert.setAlertType(AlertType.ERROR);
 			alert.setHeaderText("Server is currently offline");
 			alert.setContentText("Server is currently offline");
+			alert.setResizable(true);
 			alert.show();
 			return;
 		}
@@ -319,12 +321,16 @@ public class MainWindow {
 		if (name.length() < 1) {
 			alert.setHeaderText("Username was not set");
 			alert.setContentText("Username was not set. Please set your username.");
+			alert.setResizable(true);
 			alert.show();
+			return;
 		}
 		else if (name.length() > 20) {
 			alert.setHeaderText("Username is too long.");
 			alert.setContentText("Username is too long. Please cut your username.");
-			alert.show();				
+			alert.setResizable(true);
+			alert.show();			
+			return;
 		}
 		else {
 			connection.write(new Client_Login(name));
@@ -339,14 +345,18 @@ public class MainWindow {
 			
 			alert.setHeaderText(message.getMessage());
 			alert.setContentText(message.getMessage());
+			alert.setResizable(true);
 			alert.show();
+			return;
 		}
 		else {			
+			primaryStage = createLobbyStage(primaryStage);
 			alert = new Alert(AlertType.INFORMATION);
 			alert.setHeaderText("Login was successful");
 			alert.setContentText("Login was successful.");
+			alert.setResizable(true);
 			alert.show();
-			primaryStage = createLobbyStage(primaryStage);
+			return;
 		}
 	}
 	
@@ -355,8 +365,8 @@ public class MainWindow {
 		if (!connection.getConnected()) {
 			alert.setHeaderText("Server is currently offline");
 			alert.setContentText("Server is currently offline");
+			alert.setResizable(true);
 			alert.show();
-			//this.primaryStage.close();
 			return;
 		}
 		else {
@@ -377,7 +387,9 @@ public class MainWindow {
 		else {
 			alert.setHeaderText("ERROR");
 			alert.setContentText("ERROR");
+			alert.setResizable(true);
 			alert.show();
+			return;
 		}
 	}
 	
@@ -399,6 +411,7 @@ public class MainWindow {
 			alert.setHeaderText("Now playing opponent");
 			alert.setContentText("You can't perform move, because opponent now playing");
 			alert.show();
+			alert.setResizable(true);
 			return;
 		}
 		
@@ -434,6 +447,9 @@ public class MainWindow {
 				firstClicked = false;
 				firstColor = "";
 				firstPiece = "";
+				infoRowCol.setText("row: NA, col: NA");
+				infoTypeColor.setText("type: NA, color: NA");
+				clickedField = null;
 			}
 			else {
 				firstClicked = true;
@@ -449,17 +465,30 @@ public class MainWindow {
 		this.game_ID = game_ID;
 	}
 	
-	public void correct() {
-		Alert alert = new Alert(AlertType.CONFIRMATION);
-		alert.setHeaderText("Correct move!");
-		alert.setContentText("Correct move!");
-		alert.show();
+	public void removePiece(int row, int col) {
+		fields.getFields()[row][col].getImageView().setImage(imgBlack);
+		fields.getFields()[row][col].setPiece(null);
+	}
+	
+	public void movePiece(int row_piece, int col_piece, int row_dest, int col_dest) {
+		Image img = fields.getFields()[row_piece][col_piece].getImageView().getImage();
+		Piece piece = fields.getFields()[row_piece][col_piece].getPiece();
+		fields.getFields()[row_dest][col_dest].getImageView().setImage(img);
+		fields.getFields()[row_dest][col_dest].setPiece(piece);
 	}
 	
 	public void incorrect(String message) {
 		Alert alert = new Alert(AlertType.WARNING);
 		alert.setHeaderText(message);
 		alert.setContentText(message);
+		alert.setResizable(true);
+		alert.setWidth(alert.getWidth() + 200);
 		alert.show();
+		return;
+	}
+	
+	public void setPlayer(String player) {
+		this.player = player;
+		this.nowPlaying.setText("Now playing: " + player);
 	}
 }

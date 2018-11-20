@@ -3,6 +3,7 @@ package draughts.connection;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.List;
 
 import draughts.enums.*;
 import draughts.messages.*;
@@ -23,6 +24,22 @@ public class Connection {
 	
 	private Boolean connected = false;
 
+	public Connection(List<String> args) {
+		switch(args.size()) {
+			case 1:
+				this.address = args.get(0);
+			case 2:
+				try {
+					this.localPort = Integer.parseInt(args.get(1));
+				}
+				catch (Exception e) {
+					System.out.println("Writed port: '" + args.get(1) + "' is not a number, using default port: " + localPort);
+				}
+			default:
+				break;
+		}		
+	}
+	
 	public void closeConnection() {
 		try {
 			reader.stop();
@@ -46,7 +63,7 @@ public class Connection {
 			writer = new OutputStreamWriter(socket.getOutputStream());
 			
 			inetAddr = socket.getInetAddress();
-			System.out.println("Pripojuju se na : " + inetAddr.getHostAddress() + " se jmenem : " + inetAddr.getHostName());
+			System.out.println("Connection to address: " + inetAddr.getHostAddress() + " with name: " + inetAddr.getHostName() + " and port: " + localPort);
 			connected = true;
 		}
 		catch (Exception e) {			

@@ -1,4 +1,5 @@
 package draughts.main;
+import java.io.Console;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -24,12 +25,12 @@ import draughts.windows.*;
 public class Draughts extends Application {
 
 	public static void main(String[] args) {
-		launch(args);
+		launch(args);	
 	}
 	
 	@Override
-	public void start(Stage stage) throws Exception {
-		MainWindow window = new MainWindow(stage);
+	public void start(Stage stage) throws Exception {	
+		MainWindow window = new MainWindow(stage, this.getParameters().getRaw());
 		window.Show();
 	}
 

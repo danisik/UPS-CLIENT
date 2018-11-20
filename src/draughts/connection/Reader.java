@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 
+import draughts.constants.Constants;
 import draughts.enums.*;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
@@ -91,7 +92,23 @@ public class Reader implements Runnable {
 				break;
 			case SERVER_CORRECT_MOVE:
 				Platform.runLater(() -> {
-					mainWindow.correct();
+					int positions = Integer.parseInt(values[1]);
+					
+					switch(positions) {
+						case 2:
+							mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
+									Integer.parseInt(values[4]), Integer.parseInt(values[5]));
+							mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
+							break;
+						case 3:
+							mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
+									Integer.parseInt(values[6]), Integer.parseInt(values[7]));
+							mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
+							mainWindow.removePiece(Integer.parseInt(values[4]), Integer.parseInt(values[5]));
+							break;
+						default:
+							break;
+					}
 				});
 				break;
 			case SERVER_WRONG_MOVE:
@@ -101,9 +118,14 @@ public class Reader implements Runnable {
 				});
 				break;
 			case SERVER_END_MOVE:
-				
+				Platform.runLater(() -> {
+					mainWindow.setPlayer(Constants.playerOpponent);
+				});
 				break;
 			case SERVER_PLAY_NEXT_PLAYER:
+				Platform.runLater(() -> {
+					mainWindow.setPlayer(Constants.playerYou);
+				});
 				break;
 			case SERVER_END_GAME:
 				break;
