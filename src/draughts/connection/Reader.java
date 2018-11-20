@@ -96,9 +96,12 @@ public class Reader implements Runnable {
 				break;
 			case SERVER_WRONG_MOVE:
 				Platform.runLater(() -> {
-					String errMessage = values[1];
+					String errMessage = Wrong_Messages.getMessageByName(Integer.parseInt(values[1])).getMessage();
 					mainWindow.incorrect(errMessage);
 				});
+				break;
+			case SERVER_END_MOVE:
+				
 				break;
 			case SERVER_PLAY_NEXT_PLAYER:
 				break;

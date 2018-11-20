@@ -5,7 +5,6 @@ public enum Messages {
 	CLIENT_LOGIN("login"),
 	CLIENT_PLAY_GAME("play"),
 	CLIENT_MOVE("client_move"),
-	CLIENT_END_MOVE("end_move"),
 	CLIENT_NEXT_GAME_YES("new_game_yes"),
 	CLIENT_NEXT_GAME_NO("new_game_no"),
 	
@@ -14,6 +13,7 @@ public enum Messages {
 	SERVER_START_GAME("start_game"),
 	SERVER_WRONG_MOVE("wrong_move"),
 	SERVER_CORRECT_MOVE("correct_move"),
+	SERVER_END_MOVE("end_move"),
 	SERVER_UPDATE_GAME_ID("update_game_ID"),
 	SERVER_PLAY_NEXT_PLAYER("play_next_player"),
 	SERVER_END_GAME("end_game"),
