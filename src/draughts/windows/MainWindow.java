@@ -283,8 +283,8 @@ public class MainWindow {
 			for (int j = 0; j < fieldsCount; j++) {
 				
 				if (( (row+i) + (col+j) ) % 2 != 0) {
-					Man man = new Man(pieceColor);
-					fields.getFields()[row+i][col+j].setPiece(man);
+					Piece piece = new Man(pieceColor);
+					fields.getFields()[row+i][col+j].setPiece(piece);
 					
 					switch(pieceColor) {
 						case Black:
@@ -499,5 +499,18 @@ public class MainWindow {
 		alert.setResizable(true);
 		alert.setWidth(alert.getWidth() + 200);
 		alert.show();
+	}
+	
+	public void promote(int dp_row, int dp_col) {
+		Piece oldPiece = fields.getFields()[dp_row][dp_col].getPiece();
+		fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
+		Color color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
+		
+		if (color == Color.Black) {
+			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackBlackKing);
+		}
+		else {
+			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackWhiteKing);
+		}
 	}
 }
