@@ -81,6 +81,12 @@ public class MainWindow {
 	Field clickedField = null;
 	Message message = null;
 	
+	//ask
+	Label result = new Label();
+	Label infoResult = new Label("Do you want play another game ?");
+	Button newGameYes = new Button("Yes");
+	Button newGameNo = new Button("No");
+	
 	public MainWindow(Stage stage, List<String> args) {
 		this.connection = new Connection(args);
 		this.connection.connect(this);
@@ -226,6 +232,62 @@ public class MainWindow {
 		root.setLeft(board);
 		
 		Scene scene = new Scene(root, Constants.stageWidthBoard, Constants.stageHeightBoard);
+		stage.setScene(scene);
+		stage.setTitle(Constants.gameTitle);
+		
+		return stage;
+	}
+	
+	public Stage createAskStage(Stage stage, String yourResult) {
+		stage = onCloseEvent(stage);
+		
+		GridPane info = new GridPane();
+		info.setHgap(5);
+		info.setVgap(20);
+		
+		newGameYes.setMinWidth(60);
+		newGameYes.setOnAction(event -> {
+			wanna_play_next();
+		});
+		
+		newGameNo.setMinWidth(60);
+		newGameNo.setOnAction(event -> {
+			connection.closeConnection();
+			System.exit(0);
+		});
+		
+		String fullText = "";
+		Color color = null;
+		switch(yourResult) {
+			case "won":
+				fullText = "You WIN!";
+				color = Color.Green;
+				break;
+			case "draw":
+				fullText = "It's a DRAW!";
+				color = Color.Yellow;
+				break;
+			case "lose":
+				fullText = "You LOSE!";
+				color = Color.Red;
+				break;
+		}
+		result.setText(fullText);
+		result.setTextFill(javafx.scene.paint.Color.web(color.getHexColor()));
+		result.setStyle("-fx-font-weight: bold");
+		result.setFont(new Font(30));
+		info.add(result, 1, 1);
+		info.add(infoResult, 1, 3);
+		info.add(newGameYes, 3, 5);
+		info.add(newGameNo, 4, 5);
+		
+		
+		BorderPane root = new BorderPane();
+		generateFields();
+		generatePieces();
+		root.setCenter(info);
+		
+		Scene scene = new Scene(root, Constants.stageWidthAsk, Constants.stageHeightAsk);
 		stage.setScene(scene);
 		stage.setTitle(Constants.gameTitle);
 		
@@ -393,6 +455,10 @@ public class MainWindow {
 		}
 	}
 	
+	public void wanna_play_next() {
+		this.primaryStage = createLobbyStage(this.primaryStage);
+	}
+	
 	//------------------------------------------
 	//---------------FUNC-METHOD----------------
 	//------------------------------------------
@@ -512,5 +578,9 @@ public class MainWindow {
 		else {
 			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackWhiteKing);
 		}
+	}
+	
+	public void endGame(String state) {
+		this.primaryStage = createAskStage(primaryStage, state);
 	}
 }

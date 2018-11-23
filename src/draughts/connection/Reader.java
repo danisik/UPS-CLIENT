@@ -131,10 +131,12 @@ public class Reader implements Runnable {
 			case SERVER_PROMOTE_PIECE:
 				Platform.runLater(() -> {
 					mainWindow.promote(Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-					//mmainWindow.nowPlayingYou();
 				});
 				break;
 			case SERVER_END_GAME:
+				Platform.runLater(() -> {
+					mainWindow.endGame(values[1]);
+				});
 				break;
 			case SERVER_END_GAME_TIMEOUT:
 				break;

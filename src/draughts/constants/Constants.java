@@ -12,7 +12,7 @@ public class Constants {
 	public static final String valueSeparator = ";";
 	public static final String pieceSeparator = ",";
 	
-	//BoardWindow constants
+	//Board constants
 	public static final int stageWidthBoard = 900;
 	public static final int stageHeightBoard = 600;
 	
@@ -21,7 +21,7 @@ public class Constants {
 	public static final String endMove = "End Move";
 	public static final String nowPlaying = "Now playing: ";
 	
-	//LoginWindow constants
+	//Login constants
 	public static final int stageWidthLogin = 300;
 	public static final int stageHeightLogin = 200;
 	
@@ -32,11 +32,15 @@ public class Constants {
 	public static final String onlinePlayersMax = "(max 32)";
 	public static final String buttonLogin = "Login";
 	
-	//LobbyWindow constants
+	//Lobby constants
 	public static final int stageWidthLobby = 300;
 	public static final int stageHeightLobby = 200;
 	
 	public static final String lobbyName = "Lobby";
 	public static final String yourName = "Your name: ";
 	public static final String buttonJoinGame = "Join game";
+	
+	//Ask constants
+	public static final int stageWidthAsk = 370;
+	public static final int stageHeightAsk = 200;
 }

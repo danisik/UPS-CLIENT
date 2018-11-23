@@ -5,7 +5,8 @@ public enum Color {
 	White("white", "#ffffff"),
 	Red("red", "#f44242"),
 	Green("green", "#5c9952"),
-	Blue("blue", "#4c02f9")
+	Blue("blue", "#4c02f9"),
+	Yellow("yellow", "#ffe900")
 	;
 	
 	private String name;
