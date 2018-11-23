@@ -105,8 +105,6 @@ public class MainWindow {
 		stage = onCloseEvent(stage);
 		nameOfGame.setFont(new Font(20));
 		
-		//nameOfGame.setTextFill(javafx.scene.paint.Color.web(Color.Red.getHexColor()));
-		
 		login.setMaxWidth(75);
 		enterName.setOnKeyPressed(new EventHandler<KeyEvent>()
 	    {
@@ -252,8 +250,7 @@ public class MainWindow {
 		
 		newGameNo.setMinWidth(60);
 		newGameNo.setOnAction(event -> {
-			connection.closeConnection();
-			System.exit(0);
+			quit();
 		});
 		
 		String fullText = "";
@@ -456,7 +453,14 @@ public class MainWindow {
 	}
 	
 	public void wanna_play_next() {
+		connection.write(new Client_Next_Game_Yes());
 		this.primaryStage = createLobbyStage(this.primaryStage);
+	}
+	
+	public void quit() {
+		connection.write(new Client_Next_Game_No());
+		connection.closeConnection();
+		System.exit(0);
 	}
 	
 	//------------------------------------------

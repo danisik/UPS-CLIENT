@@ -64,7 +64,6 @@ public class Reader implements Runnable {
 	}
 
 	public void processMessage(String stringMessage) {
-		Message message = null;
 		String[] values = stringMessage.split(";");
 		Messages messages = Messages.getMessageByName(values[0]);
 		switch(messages) {
@@ -75,7 +74,16 @@ public class Reader implements Runnable {
 				break;
 			case SERVER_LOGIN_FALSE:
 				Platform.runLater(() -> {
-					String errMessage = values[1];
+					int err = Integer.parseInt(values[1]);
+					String errMessage = "";
+					switch (err) {
+						case 1:
+							errMessage = "Too much Players online";
+							break;
+						case 2:
+							errMessage = "This name is already taken";
+							break;
+					}
 					mainWindow.processLogin(new Server_Login_False(errMessage));
 				});
 				break;
