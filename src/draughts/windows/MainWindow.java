@@ -17,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -173,6 +174,7 @@ public class MainWindow {
 	}
 	
 	public Stage createBoardStage(Stage stage, int game_ID) {
+		this.game_ID = game_ID;
 		stage = onCloseEvent(stage);
 		
 		infoPlayerColor.setText("Your color is: " + client.getColor().toString());
@@ -184,23 +186,7 @@ public class MainWindow {
 		infoPlayerName.setFont(new Font(15));
 		
 		try {
-			streamWhite = new FileInputStream("img/white.png");
-			streamBlack = new FileInputStream("img/black.png");
-		
-			streamBlackBlack = new FileInputStream("img/black-black.png");
-			streamBlackWhite = new FileInputStream("img/black-white.png");
-		
-			streamBlackBlackKing = new FileInputStream("img/black-black-king.png");
-			streamBlackWhiteKing = new FileInputStream("img/black-white-king.png");
-		
-			imgWhite = new Image(streamWhite);
-			imgBlack = new Image(streamBlack);
-		
-			imgBlackBlack = new Image(streamBlackBlack);
-			imgBlackWhite = new Image(streamBlackWhite);
-		
-			imgBlackBlackKing = new Image(streamBlackBlackKing);
-			imgBlackWhiteKing = new Image(streamBlackWhiteKing);
+			inicialize_images();
 		}
 		catch(Exception e) {
 			
@@ -222,10 +208,9 @@ public class MainWindow {
 		info.add(infoTypeColor, 1, 6);
 		info.add(nowPlaying, 1, 12);
 		
+		generateFields();
 		
 		BorderPane root = new BorderPane();
-		generateFields();
-		generatePieces();
 		root.setCenter(info);
 		root.setLeft(board);
 		
@@ -442,6 +427,7 @@ public class MainWindow {
 			client.setColor(message.getColor());
 			this.game_ID = game_ID;
 			primaryStage = createBoardStage(primaryStage, this.game_ID);
+			generatePieces();
 		}
 		else {
 			alert.setHeaderText("ERROR");
@@ -461,6 +447,120 @@ public class MainWindow {
 		connection.write(new Client_Next_Game_No());
 		connection.closeConnection();
 		System.exit(0);
+	}
+	
+	public void updateGameID(int game_ID) {
+		this.game_ID = game_ID;
+	}
+	
+	public void removePiece(int row, int col) {
+		fields.getFields()[row][col].getImageView().setImage(imgBlack);
+		fields.getFields()[row][col].setPiece(null);
+	}
+	
+	public void movePiece(int row_piece, int col_piece, int row_dest, int col_dest) {
+		Image img = fields.getFields()[row_piece][col_piece].getImageView().getImage();
+		Piece piece = fields.getFields()[row_piece][col_piece].getPiece();
+		fields.getFields()[row_dest][col_dest].getImageView().setImage(img);
+		fields.getFields()[row_dest][col_dest].setPiece(piece);
+	}
+	
+	public void incorrect(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText(message);
+		alert.setContentText(message);
+		alert.setResizable(true);
+		alert.setWidth(alert.getWidth() + 200);
+		alert.show();
+		return;
+	}
+	
+	public void setPlayer(String player) {
+		this.player = player;
+		this.nowPlaying.setText("Now playing: " + player);
+	}
+	
+	public void nowPlayingYou() {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText("You are on move");
+		alert.setContentText("You are on move");
+		alert.setResizable(true);
+		alert.setWidth(alert.getWidth() + 200);
+		alert.show();
+	}
+	
+	public void promote(int dp_row, int dp_col) {
+		Piece oldPiece = fields.getFields()[dp_row][dp_col].getPiece();
+		fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
+		Color color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
+		
+		if (color == Color.Black) {
+			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackBlackKing);
+		}
+		else {
+			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackWhiteKing);
+		}
+	}
+	
+	public void endGame(String state) {
+		this.primaryStage = createAskStage(primaryStage, state);
+	}
+	
+	public void restoreBoard(String[] values) {
+		int offset = 5;
+		this.client = new Client(values[1]);
+		switch(values[2]) {
+			case "black":
+				client.setColor(Color.Black);
+				break;
+			case "white":
+				client.setColor(Color.White);
+				break;
+		}
+		
+		this.primaryStage = createBoardStage(this.primaryStage, Integer.parseInt(values[3]));
+		
+		inicialize_images();
+		
+		for(int i = offset; i < (Integer.parseInt(values[4]) * 4) + offset; i+=4) {
+			int row = Integer.parseInt(values[i]);
+			int col = Integer.parseInt(values[i+1]);
+			String clr = values[i+2];
+			String tp = values[i+3];
+			
+			Color color = null;
+			Image img = null;
+			switch(clr) {
+				case "black":
+					color = Color.Black;
+					break;
+				case "white":
+					color = Color.White;
+					break;
+			}
+			
+			Piece piece = null;
+			switch(tp) {
+				case "man":
+					piece = new Man(color);	
+					
+					if (color == Color.Black) img = imgBlackBlack;
+					else img = imgBlackWhite;
+					
+					break;
+				case "king":
+					piece = new King(color);
+					
+					if (color == Color.Black) img = imgBlackBlackKing;
+					else img = imgBlackWhiteKing;
+					
+					break;			
+			}
+			
+			fields.getFields()[row][col].getImageView().setImage(img);
+			fields.getFields()[row][col].setPiece(piece);
+			System.out.println("row: " + row + "; col: " + col + "; type: " + tp + "; color: " + clr);
+		}
 	}
 	
 	//------------------------------------------
@@ -531,60 +631,27 @@ public class MainWindow {
 		}
 	}
 	
-	public void updateGameID(int game_ID) {
-		this.game_ID = game_ID;
-	}
-	
-	public void removePiece(int row, int col) {
-		fields.getFields()[row][col].getImageView().setImage(imgBlack);
-		fields.getFields()[row][col].setPiece(null);
-	}
-	
-	public void movePiece(int row_piece, int col_piece, int row_dest, int col_dest) {
-		Image img = fields.getFields()[row_piece][col_piece].getImageView().getImage();
-		Piece piece = fields.getFields()[row_piece][col_piece].getPiece();
-		fields.getFields()[row_dest][col_dest].getImageView().setImage(img);
-		fields.getFields()[row_dest][col_dest].setPiece(piece);
-	}
-	
-	public void incorrect(String message) {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.setHeaderText(message);
-		alert.setContentText(message);
-		alert.setResizable(true);
-		alert.setWidth(alert.getWidth() + 200);
-		alert.show();
-		return;
-	}
-	
-	public void setPlayer(String player) {
-		this.player = player;
-		this.nowPlaying.setText("Now playing: " + player);
-	}
-	
-	public void nowPlayingYou() {
-		Alert alert = new Alert(AlertType.WARNING);
-		alert.setHeaderText("You are on move");
-		alert.setContentText("You are on move");
-		alert.setResizable(true);
-		alert.setWidth(alert.getWidth() + 200);
-		alert.show();
-	}
-	
-	public void promote(int dp_row, int dp_col) {
-		Piece oldPiece = fields.getFields()[dp_row][dp_col].getPiece();
-		fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
-		Color color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
+	public void inicialize_images() {
+		try {
+			streamWhite = new FileInputStream("img/white.png");
+			streamBlack = new FileInputStream("img/black.png");
+			
+			streamBlackBlack = new FileInputStream("img/black-black.png");
+			streamBlackWhite = new FileInputStream("img/black-white.png");
 		
-		if (color == Color.Black) {
-			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackBlackKing);
+			streamBlackBlackKing = new FileInputStream("img/black-black-king.png");
+			streamBlackWhiteKing = new FileInputStream("img/black-white-king.png");
+		
+			imgWhite = new Image(streamWhite);
+			imgBlack = new Image(streamBlack);
+		
+			imgBlackBlack = new Image(streamBlackBlack);
+			imgBlackWhite = new Image(streamBlackWhite);
+		
+			imgBlackBlackKing = new Image(streamBlackBlackKing);
+			imgBlackWhiteKing = new Image(streamBlackWhiteKing);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 		}
-		else {
-			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackWhiteKing);
-		}
-	}
-	
-	public void endGame(String state) {
-		this.primaryStage = createAskStage(primaryStage, state);
 	}
 }

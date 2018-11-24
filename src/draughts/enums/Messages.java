@@ -20,7 +20,8 @@ public enum Messages {
 	SERVER_END_GAME_TIMEOUT("end_game_timeout"),
 	SERVER_OPPONENT_CONNECTION_LOST("opponent_connection_lost"),
 	SERVER_CLIENT_CONNECTION_RESTORED("connection_restored"),
-	SERVER_PROMOTE_PIECE("promote")
+	SERVER_PROMOTE_PIECE("promote"),
+	SERVER_RESTORE_BOARD("board")
 	;
 	
 	private String name;

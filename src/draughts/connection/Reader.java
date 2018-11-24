@@ -146,6 +146,11 @@ public class Reader implements Runnable {
 					mainWindow.endGame(values[1]);
 				});
 				break;
+			case SERVER_RESTORE_BOARD:
+				Platform.runLater(() -> {
+					mainWindow.restoreBoard(values);
+				});
+				break;
 			case SERVER_END_GAME_TIMEOUT:
 				break;
 			case SERVER_OPPONENT_CONNECTION_LOST:
