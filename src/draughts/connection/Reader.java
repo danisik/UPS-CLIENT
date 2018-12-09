@@ -60,7 +60,6 @@ public class Reader implements Runnable {
 		} catch (IOException e) {
 			//e.printStackTrace();
 		}
-		this.stop();
 	}
 
 	public void processMessage(String stringMessage) {

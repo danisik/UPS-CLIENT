@@ -5,7 +5,6 @@ public enum Messages {
 	CLIENT_LOGIN("login"),
 	CLIENT_PLAY_GAME("play"),
 	CLIENT_MOVE("client_move"),
-	CLIENT_NEXT_GAME_YES("new_game_yes"),
 	CLIENT_NEXT_GAME_NO("new_game_no"),
 	
 	SERVER_LOGIN_OK("login_ok"),
@@ -17,9 +16,9 @@ public enum Messages {
 	SERVER_UPDATE_GAME_ID("update_game_ID"),
 	SERVER_PLAY_NEXT_PLAYER("play_next_player"),
 	SERVER_END_GAME("end_game"),
-	SERVER_END_GAME_TIMEOUT("end_game_timeout"),
-	SERVER_OPPONENT_CONNECTION_LOST("opponent_connection_lost"),
-	SERVER_CLIENT_CONNECTION_RESTORED("connection_restored"),
+	SERVER_END_GAME_TIMEOUT("end_game_timeout"), //neimplementovano
+	SERVER_OPPONENT_CONNECTION_LOST("opponent_connection_lost"), //neimplementovano
+	SERVER_CLIENT_CONNECTION_RESTORED("connection_restored"), //neimplementovano
 	SERVER_PROMOTE_PIECE("promote"),
 	SERVER_RESTORE_BOARD("board")
 	;

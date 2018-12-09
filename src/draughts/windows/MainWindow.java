@@ -1,5 +1,6 @@
 package draughts.windows;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -15,6 +16,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -76,7 +78,7 @@ public class MainWindow {
 	Label infoPlayerName = new Label();
 	//10x10 board, 4x5 pieces per player, white starts, pieces starts staying on black field
 	int piecesCountPerRow = 5;
-	int piecesRow = 4;
+	int piecesRow = 2;
 	int fieldsCount = 10;
 	Fields fields = new Fields(fieldsCount);
 	Field clickedField = null;
@@ -149,7 +151,7 @@ public class MainWindow {
 		nameOfPlayer.setFont(new Font(20));
 		nameOfPlayer.setText(client.getName());		
 		nameOfPlayer.setTextFill(javafx.scene.paint.Color.web(Color.Blue.getHexColor()));
-		
+		play.setDisable(false);
 		play.setOnAction(event -> {
 			play();
 		});
@@ -241,7 +243,7 @@ public class MainWindow {
 		String fullText = "";
 		Color color = null;
 		switch(yourResult) {
-			case "won":
+			case "win":
 				fullText = "You WIN!";
 				color = Color.Green;
 				break;
@@ -271,7 +273,7 @@ public class MainWindow {
 		
 		Scene scene = new Scene(root, Constants.stageWidthAsk, Constants.stageHeightAsk);
 		stage.setScene(scene);
-		stage.setTitle(Constants.gameTitle);
+		stage.setTitle(Constants.gameTitle);	
 		
 		return stage;
 	}
@@ -439,14 +441,20 @@ public class MainWindow {
 	}
 	
 	public void wanna_play_next() {
-		connection.write(new Client_Next_Game_Yes());
 		this.primaryStage = createLobbyStage(this.primaryStage);
 	}
 	
 	public void quit() {
-		connection.write(new Client_Next_Game_No());
-		connection.closeConnection();
-		System.exit(0);
+		try {
+			connection.write(new Client_Next_Game_No());
+			connection.closeConnection();	
+			this.primaryStage.fireEvent(new WindowEvent(this.primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));	
+		}
+		catch (Exception e) {
+			this.primaryStage.close();
+			Platform.exit();
+			System.exit(0);
+		}
 	}
 	
 	public void updateGameID(int game_ID) {
@@ -490,8 +498,11 @@ public class MainWindow {
 	}
 	
 	public void promote(int dp_row, int dp_col) {
-		Piece oldPiece = fields.getFields()[dp_row][dp_col].getPiece();
-		fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
+		try {
+			Piece oldPiece = fields.getFields()[dp_row][dp_col].getPiece();
+			fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
+		}
+		catch (Exception e) {}
 		Color color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
 		
 		if (color == Color.Black) {
@@ -507,7 +518,7 @@ public class MainWindow {
 	}
 	
 	public void restoreBoard(String[] values) {
-		int offset = 5;
+		int offset = 6;
 		this.client = new Client(values[1]);
 		switch(values[2]) {
 			case "black":
@@ -520,9 +531,11 @@ public class MainWindow {
 		
 		this.primaryStage = createBoardStage(this.primaryStage, Integer.parseInt(values[3]));
 		
+		this.nowPlaying.setText(values[5]);
+		
 		inicialize_images();
 		
-		for(int i = offset; i < (Integer.parseInt(values[4]) * 4) + offset; i+=4) {
+		for(int i = offset; i < (Integer.parseInt(values[4]) * 2) + offset; i+=4) {
 			int row = Integer.parseInt(values[i]);
 			int col = Integer.parseInt(values[i+1]);
 			String clr = values[i+2];
@@ -611,7 +624,7 @@ public class MainWindow {
 			infoTypeColor.setText("type: " + typeName + ", color: " + colorName);
 			
 			if (firstClicked) {
-				connection.write(new Move(game_ID, firstRow, firstCol, row, col, firstColor, firstPiece));				
+				connection.write(new Client_Move(game_ID, firstRow, firstCol, row, col, firstColor, firstPiece));				
 				firstRow = -1;
 				firstCol = -1;
 				firstClicked = false;

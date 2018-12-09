@@ -8,6 +8,7 @@ import java.util.List;
 import draughts.enums.*;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
+import javafx.application.Platform;
 
 
 public class Connection {
@@ -82,8 +83,10 @@ public class Connection {
 			System.out.println("No message send");
 		}
 		catch (Exception e) {
-			connect(mainWindow);
-			e.printStackTrace();
+			System.out.println("Connection lost");
+			Platform.runLater(() -> {
+				mainWindow.quit();
+			});
 		}
 	}
 
