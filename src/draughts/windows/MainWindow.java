@@ -43,6 +43,7 @@ public class MainWindow {
 	private int firstCol = -1;
 	private String firstColor = "";
 	private String firstPiece = "";
+	private Boolean opp_connection_lost = false;
 	
 	//login
 	Label nameOfGame = new Label(Constants.gameTitle);
@@ -576,12 +577,38 @@ public class MainWindow {
 		}
 	}
 	
+	public void opponent_connection_lost() {
+		opp_connection_lost = true;
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText("Opponent lost connection");
+		alert.setContentText("Please wait until opponent restore his connection");
+		alert.show();
+		alert.setResizable(true);
+		while(opp_connection_lost) {
+			if (!alert.isShowing()) {
+				alert.show();
+			}
+		}
+		alert.close();
+		alert.setAlertType(AlertType.INFORMATION);
+		alert.setHeaderText("Opponent restore connection");
+		alert.setContentText("Opponent is now ready to play!");
+		alert.show();
+		alert.setResizable(true);
+	}
+	
+	public void opponent_connection_restored() {
+		opp_connection_lost = false;
+	}
+	
 	//------------------------------------------
 	//---------------FUNC-METHOD----------------
 	//------------------------------------------
 	
 	public Stage onCloseEvent(Stage stage) {
 		stage.setOnCloseRequest(event -> {
+			connection.write(new Client_App_End());
+			Platform.exit();
 		    System.exit(0);
 		});
 		return stage;

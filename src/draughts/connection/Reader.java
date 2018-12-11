@@ -153,8 +153,14 @@ public class Reader implements Runnable {
 			case SERVER_END_GAME_TIMEOUT:
 				break;
 			case SERVER_OPPONENT_CONNECTION_LOST:
+				Platform.runLater(() -> {
+					mainWindow.opponent_connection_lost();
+				});
 				break;
 			case SERVER_CLIENT_CONNECTION_RESTORED:
+				Platform.runLater(() -> {
+					mainWindow.opponent_connection_restored();
+				});
 				break;
 			default: 
 				break;
