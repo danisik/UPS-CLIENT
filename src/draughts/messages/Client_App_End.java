@@ -1,6 +1,5 @@
 package draughts.messages;
 
-import draughts.constants.*;
 import draughts.enums.*;
 
 public class Client_App_End extends Message{

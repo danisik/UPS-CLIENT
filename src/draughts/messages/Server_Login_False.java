@@ -1,6 +1,5 @@
 package draughts.messages;
 
-import draughts.constants.*;
 import draughts.enums.*;
 
 public class Server_Login_False extends Message{

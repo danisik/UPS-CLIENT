@@ -608,6 +608,7 @@ public class MainWindow {
 	public Stage onCloseEvent(Stage stage) {
 		stage.setOnCloseRequest(event -> {
 			connection.write(new Client_App_End());
+			connection.closeConnection();
 			Platform.exit();
 		    System.exit(0);
 		});

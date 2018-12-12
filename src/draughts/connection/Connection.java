@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
-import draughts.enums.*;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
 import javafx.application.Platform;
@@ -48,7 +47,7 @@ public class Connection {
 			socket.close();
 		} 
 		catch (Exception e) {
-			e.printStackTrace();
+			mainWindow.quit();
 		}
 	}
 	

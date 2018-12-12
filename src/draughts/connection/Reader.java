@@ -3,17 +3,15 @@ package draughts.connection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 import draughts.constants.Constants;
 import draughts.enums.*;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 
 public class Reader implements Runnable {
@@ -44,14 +42,24 @@ public class Reader implements Runnable {
 					processMessage(message);
 				}
 				else {
-					//error - chyba spojení
+					Platform.runLater(() -> {
+						end();
+					}); 
 				}
 			} catch (Exception e) {
-				connection.connect(mainWindow);
-				e.printStackTrace();
-				//
+				Platform.runLater(() -> {
+					end();
+				}); 
 			}	
 		}
+	}
+	
+	public void end() {
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setHeaderText("Connection lost");
+		alert.setContentText("Connection lost");
+		alert.showAndWait();
+		mainWindow.quit();
 	}
 	
 	public void stop() {

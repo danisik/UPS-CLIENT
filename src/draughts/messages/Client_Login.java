@@ -14,7 +14,7 @@ public class Client_Login extends Message{
 
 	@Override
 	public String toString() {
-		return this.name.toString() + Constants.valueSeparator + this.userName + Constants.valueSeparator;
+		return this.name.toString() + Constants.valueSeparator + this.userName + Constants.valueSeparator + "\n";
 	}
 	
 	public String getUserName() {
