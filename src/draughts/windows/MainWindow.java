@@ -504,7 +504,15 @@ public class MainWindow {
 			fields.getFields()[dp_row][dp_col].setPiece(new King(oldPiece.getColor()));
 		}
 		catch (Exception e) {}
-		Color color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
+		Color color = null;
+		while (color == null) {
+			try {
+				color = fields.getFields()[dp_row][dp_col].getPiece().getColor();
+			}
+			catch (Exception e) {
+				//vlakno jeste nestihlo zpracovat presun
+			}
+		}
 		
 		if (color == Color.Black) {
 			fields.getFields()[dp_row][dp_col].getImageView().setImage(imgBlackBlackKing);

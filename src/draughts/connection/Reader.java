@@ -42,6 +42,10 @@ public class Reader implements Runnable {
 				}
 				else {
 					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setHeaderText("Connection lost");
+						alert.setContentText("Connection lost");
+						alert.showAndWait();
 						end();
 					}); 
 					break;
@@ -56,10 +60,6 @@ public class Reader implements Runnable {
 	}
 	
 	public void end() {
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setHeaderText("Connection lost");
-		alert.setContentText("Connection lost");
-		alert.showAndWait();
 		mainWindow.quit();
 	}
 	
