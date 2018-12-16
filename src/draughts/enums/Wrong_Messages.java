@@ -10,7 +10,10 @@ public enum Wrong_Messages {
 	HOP_TWO_FIELDS(6, "You can't move by 2 fields when you do not hop over opponents piece"),
 	NOT_EMPTY_FIELD(7, "You can't move to fields, because other piece is here"),
 	HOP_MORE_FIELDS(8, "You can move your man by only 1 field per move"),
-	DESTROY_PIECE(9, "If you can destroy opponents piece, do it")
+	DESTROY_PIECE(9, "If you can destroy opponents piece, do it"),
+	
+	OPPONENT_LEFT(10, "Opponent left the game"),
+	OPPONENT_TIMEOUT(11, "Opponent timeout")
 	;
 	
 	private int ID;

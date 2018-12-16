@@ -26,7 +26,6 @@ public class Reader implements Runnable {
 			this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			this.connection = connection;
 		} catch (IOException e) {
-			//e.printStackTrace();
 		}
 		this.mainWindow = mainWindow;
 	}
@@ -45,11 +44,13 @@ public class Reader implements Runnable {
 					Platform.runLater(() -> {
 						end();
 					}); 
+					break;
 				}
 			} catch (Exception e) {
 				Platform.runLater(() -> {
 					end();
 				}); 
+				break;
 			}	
 		}
 	}
@@ -140,7 +141,6 @@ public class Reader implements Runnable {
 			case SERVER_PLAY_NEXT_PLAYER:
 				Platform.runLater(() -> {
 					mainWindow.setPlayer(Constants.playerYou);
-					//mmainWindow.nowPlayingYou();
 				});
 				break;
 			case SERVER_PROMOTE_PIECE:
@@ -159,6 +159,16 @@ public class Reader implements Runnable {
 				});
 				break;
 			case SERVER_END_GAME_TIMEOUT:
+				Wrong_Messages message = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
+				Platform.runLater(() -> {
+					mainWindow.endGameNotProperly(message.getMessage());
+				});
+				break;
+			case SERVER_END_GAME_LEFT: 
+				Wrong_Messages msg = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
+				Platform.runLater(() -> {
+					mainWindow.endGameNotProperly(msg.getMessage());
+				});
 				break;
 			case SERVER_OPPONENT_CONNECTION_LOST:
 				Platform.runLater(() -> {

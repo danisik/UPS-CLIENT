@@ -238,6 +238,8 @@ public class MainWindow {
 		
 		newGameNo.setMinWidth(60);
 		newGameNo.setOnAction(event -> {
+			connection.write(new Client_Next_Game_No());
+			connection.closeConnection();	
 			quit();
 		});
 		
@@ -447,8 +449,6 @@ public class MainWindow {
 	
 	public void quit() {
 		try {
-			connection.write(new Client_Next_Game_No());
-			connection.closeConnection();	
 			this.primaryStage.fireEvent(new WindowEvent(this.primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));	
 		}
 		catch (Exception e) {
@@ -516,6 +516,16 @@ public class MainWindow {
 	
 	public void endGame(String state) {
 		this.primaryStage = createAskStage(primaryStage, state);
+	}
+
+	public void endGameNotProperly(String message) {
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setHeaderText(message);
+		alert.setContentText(message);
+		alert.setResizable(true);
+		alert.showAndWait();
+		
+		this.primaryStage = createAskStage(primaryStage, "win");
 	}
 	
 	public void restoreBoard(String[] values) {
@@ -608,10 +618,10 @@ public class MainWindow {
 	public Stage onCloseEvent(Stage stage) {
 		stage.setOnCloseRequest(event -> {
 			connection.write(new Client_App_End());
-			connection.closeConnection();
-			Platform.exit();
 		    System.exit(0);
+		    return;
 		});
+		
 		return stage;
 	}
 	
