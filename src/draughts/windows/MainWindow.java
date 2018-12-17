@@ -150,9 +150,10 @@ public class MainWindow {
 		play.setMaxWidth(75);
 		nameOfGame.setFont(new Font(20));
 		nameOfPlayer.setFont(new Font(20));
-		nameOfPlayer.setText(client.getName());		
+		nameOfPlayer.setText(getClient().getName());		
 		nameOfPlayer.setTextFill(javafx.scene.paint.Color.web(Color.Blue.getHexColor()));
 		play.setDisable(false);
+		play.setText("Play");
 		play.setOnAction(event -> {
 			play();
 		});
@@ -180,11 +181,11 @@ public class MainWindow {
 		this.game_ID = game_ID;
 		stage = onCloseEvent(stage);
 		
-		infoPlayerColor.setText("Your color is: " + client.getColor().toString());
-		infoPlayerColor.setTextFill(javafx.scene.paint.Color.web(client.getColor().getHexColor()));
+		infoPlayerColor.setText("Your color is: " + getClient().getColor().toString());
+		infoPlayerColor.setTextFill(javafx.scene.paint.Color.web(getClient().getColor().getHexColor()));
 		infoPlayerColor.setFont(new Font(15));
 		
-		infoPlayerName.setText("Your name is: " + client.getName());
+		infoPlayerName.setText("Your name is: " + getClient().getName());
 		infoPlayerName.setTextFill(javafx.scene.paint.Color.web(draughts.enums.Color.Blue.getHexColor()));
 		infoPlayerName.setFont(new Font(15));
 		
@@ -199,7 +200,7 @@ public class MainWindow {
 		info.setHgap(60);
 		info.setVgap(20);
 		
-		if (client.getColor().toString().equals(draughts.enums.Color.White.toString())) {
+		if (getClient().getColor().toString().equals(draughts.enums.Color.White.toString())) {
 			player = Constants.playerYou;
 		}
 		else player = Constants.playerOpponent;
@@ -382,8 +383,8 @@ public class MainWindow {
 			return;
 		}
 		else {
+			setClient(new Client(name));
 			connection.write(new Client_Login(name));
-			client = new Client(name);
 		}
 	}
 	
@@ -420,6 +421,7 @@ public class MainWindow {
 		}
 		else {
 			connection.write(new Client_Play_Game());
+			client.setState(States.WANNA_PLAY);
 			play.setDisable(true);
 			play.setText("Queued");
 		}
@@ -429,7 +431,7 @@ public class MainWindow {
 		Alert alert = new Alert(AlertType.ERROR);
 		
 		if (message.name == Messages.SERVER_START_GAME) {
-			client.setColor(message.getColor());
+			getClient().setColor(message.getColor());
 			this.game_ID = game_ID;
 			primaryStage = createBoardStage(primaryStage, this.game_ID);
 			generatePieces();
@@ -445,6 +447,7 @@ public class MainWindow {
 	
 	public void wanna_play_next() {
 		this.primaryStage = createLobbyStage(this.primaryStage);
+		this.client.setState(States.IN_LOBBY);
 	}
 	
 	public void quit() {
@@ -538,13 +541,13 @@ public class MainWindow {
 	
 	public void restoreBoard(String[] values) {
 		int offset = 6;
-		this.client = new Client(values[1]);
+		this.setClient(new Client(values[1]));
 		switch(values[2]) {
 			case "black":
-				client.setColor(Color.Black);
+				getClient().setColor(Color.Black);
 				break;
 			case "white":
-				client.setColor(Color.White);
+				getClient().setColor(Color.White);
 				break;
 		}
 		
@@ -712,5 +715,13 @@ public class MainWindow {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Client getClient() {
+		return client;
+	}
+
+	public void setClient(Client client) {
+		this.client = client;
 	}
 }
