@@ -76,109 +76,164 @@ public class Reader implements Runnable {
 		Messages messages = Messages.getMessageByName(values[0]);
 		switch(messages) {
 			case SERVER_LOGIN_OK:
-				Platform.runLater(() -> {
-					mainWindow.processLogin(new Server_Login_OK());
-				});
+				if (mainWindow.getClient().getState() == States.LOGGING) {
+					Platform.runLater(() -> {
+						mainWindow.processLogin(new Server_Login_OK());
+						mainWindow.getClient().setState(States.IN_LOBBY);
+					});
+				}
 				break;
 			case SERVER_LOGIN_FALSE:
-				Platform.runLater(() -> {
-					int err = Integer.parseInt(values[1]);
-					String errMessage = "";
-					switch (err) {
-						case 1:
-							errMessage = "Too much Players online";
-							break;
-						case 2:
-							errMessage = "This name is already taken";
-							break;
-					}
-					mainWindow.processLogin(new Server_Login_False(errMessage));
-				});
+				if (mainWindow.getClient().getState() == States.LOGGING) {
+					Platform.runLater(() -> {
+						int err = Integer.parseInt(values[1]);
+						String errMessage = "";
+						switch (err) {
+							case 1:
+								errMessage = "Too much Players online";
+								break;
+							case 2:
+								errMessage = "This name is already taken";
+								break;
+						}
+						mainWindow.processLogin(new Server_Login_False(errMessage));
+					});
+				}
 				break;
 			case SERVER_START_GAME:
-				Platform.runLater(() -> {
-					Color color = Color.getColor(values[1]);
-					int game_ID = Integer.parseInt(values[2]);
-					mainWindow.processPlay(new Server_Start_Game(color), game_ID);
-				});
+				if (mainWindow.getClient().getState() == States.WANNA_PLAY) {
+					Platform.runLater(() -> {
+						Color color = Color.getColor(values[1]);
+						int game_ID = Integer.parseInt(values[2]);
+						mainWindow.processPlay(new Server_Start_Game(color), game_ID);
+						if (color == Color.Black) mainWindow.getClient().setState(States.OPPONENT_PLAYING);
+						else if (color == Color.White) mainWindow.getClient().setState(States.YOU_PLAYING);
+					});
+				}
 				break;
 			case SERVER_UPDATE_GAME_ID:
-					int game_ID = Integer.parseInt(values[1]);
-					mainWindow.updateGameID(game_ID);
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+					mainWindow.getClient().getState() == States.YOU_PLAYING) {
+						int game_ID = Integer.parseInt(values[1]);
+						mainWindow.updateGameID(game_ID);
+				}
 				break;
 			case SERVER_CORRECT_MOVE:
-				Platform.runLater(() -> {
-					int positions = Integer.parseInt(values[1]);
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						int positions = Integer.parseInt(values[1]);
 					
-					switch(positions) {
-						case 2:
-							mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
-									Integer.parseInt(values[4]), Integer.parseInt(values[5]));
-							mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
-							break;
-						case 3:
-							mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
-									Integer.parseInt(values[6]), Integer.parseInt(values[7]));
-							mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
-							mainWindow.removePiece(Integer.parseInt(values[4]), Integer.parseInt(values[5]));
-							break;
-						default:
-							break;
-					}
-				});
+						switch(positions) {
+							case 2:
+								mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
+										Integer.parseInt(values[4]), Integer.parseInt(values[5]));
+								mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
+								break;
+							case 3:
+								mainWindow.movePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]), 
+										Integer.parseInt(values[6]), Integer.parseInt(values[7]));
+								mainWindow.removePiece(Integer.parseInt(values[2]), Integer.parseInt(values[3]));
+								mainWindow.removePiece(Integer.parseInt(values[4]), Integer.parseInt(values[5]));
+								break;
+							default:
+								break;
+						}
+					});
+				}
 				break;
 			case SERVER_WRONG_MOVE:
-				Platform.runLater(() -> {
-					String errMessage = Wrong_Messages.getMessageByName(Integer.parseInt(values[1])).getMessage();
-					mainWindow.incorrect(errMessage);
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						String errMessage = Wrong_Messages.getMessageByName(Integer.parseInt(values[1])).getMessage();
+						mainWindow.incorrect(errMessage);
+					});
+				}
 				break;
 			case SERVER_END_MOVE:
-				Platform.runLater(() -> {
-					mainWindow.setPlayer(Constants.playerOpponent);
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						mainWindow.setPlayer(Constants.playerOpponent);
+						mainWindow.getClient().setState(States.OPPONENT_PLAYING);
+					});
+				}
 				break;
 			case SERVER_PLAY_NEXT_PLAYER:
-				Platform.runLater(() -> {
-					mainWindow.setPlayer(Constants.playerYou);
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {			
+					Platform.runLater(() -> {
+						mainWindow.setPlayer(Constants.playerYou);
+						mainWindow.getClient().setState(States.YOU_PLAYING);
+					});
+				}
 				break;
 			case SERVER_PROMOTE_PIECE:
-				Platform.runLater(() -> {
-					mainWindow.promote(Integer.parseInt(values[1]), Integer.parseInt(values[2]));
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						mainWindow.promote(Integer.parseInt(values[1]), Integer.parseInt(values[2]));
+					});
+				}
 				break;
 			case SERVER_END_GAME:
-				Platform.runLater(() -> {
-					mainWindow.endGame(values[1]);
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						mainWindow.endGame(values[1]);
+					});
+				}
 				break;
 			case SERVER_RESTORE_BOARD:
-				Platform.runLater(() -> {
-					mainWindow.restoreBoard(values);
-				});
+				if (mainWindow.getClient().getState() == States.LOGGING) {
+					Platform.runLater(() -> {
+						mainWindow.restoreBoard(values);
+					});
+				}
 				break;
 			case SERVER_END_GAME_TIMEOUT:
-				Wrong_Messages message = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
-				Platform.runLater(() -> {
-					mainWindow.endGameNotProperly(message.getMessage());
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Wrong_Messages message = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
+					Platform.runLater(() -> {
+						mainWindow.endGameNotProperly(message.getMessage());
+					});
+				}
 				break;
 			case SERVER_END_GAME_LEFT: 
-				Wrong_Messages msg = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
-				Platform.runLater(() -> {
-					mainWindow.endGameNotProperly(msg.getMessage());
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Wrong_Messages msg = Wrong_Messages.getMessageByName(Integer.parseInt(values[1]));
+					Platform.runLater(() -> {
+						mainWindow.endGameNotProperly(msg.getMessage());
+					});
+				}
 				break;
 			case SERVER_OPPONENT_CONNECTION_LOST:
-				Platform.runLater(() -> {
-					mainWindow.opponent_connection_lost();
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						mainWindow.opponent_connection_lost();
+					});
+				}
 				break;
 			case SERVER_CLIENT_CONNECTION_RESTORED:
-				Platform.runLater(() -> {
-					mainWindow.opponent_connection_restored();
-				});
+				if (mainWindow.getClient().getState() == States.OPPONENT_PLAYING ||
+				mainWindow.getClient().getState() == States.YOU_PLAYING) {
+			
+					Platform.runLater(() -> {
+						mainWindow.opponent_connection_restored();
+					});
+				}
 				break;
 			default: 
 				break;
