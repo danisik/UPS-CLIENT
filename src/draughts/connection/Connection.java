@@ -1,8 +1,10 @@
 package draughts.connection;
 
 import java.io.OutputStreamWriter;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import draughts.messages.*;
@@ -26,14 +28,34 @@ public class Connection {
 
 	public Connection(List<String> args) {
 		switch(args.size()) {
-			case 1:
-				this.address = args.get(0);
-			case 2:
-				try {
-					this.localPort = Integer.parseInt(args.get(1));
+			case 4:
+				if (args.get(2).equals("-port") || args.get(2).equals("-p")) {
+					try {
+						this.localPort = Integer.parseInt(args.get(3));
+					}
+					catch (Exception e) {
+						System.out.println("Writed port: '" + args.get(3) + "' is not a number, using default port: " + localPort);
+					}
 				}
-				catch (Exception e) {
-					System.out.println("Writed port: '" + args.get(1) + "' is not a number, using default port: " + localPort);
+				else {
+					System.out.println("Third parameter is not -port or -p, using default port: " + localPort);
+				}
+			case 2:
+				if (args.get(0).equals("-address") || args.get(0).equals("-a")) {
+					try {
+						if (checkIPv4(args.get(1))) {
+							this.address = args.get(1);
+						}
+						else {
+							System.out.println("Writed address: '" + args.get(1) + "' is not a valid IPv4 address, using default address: " + this.address);
+						}
+					}
+					catch (Exception e) {
+						System.out.println("Writed address: '" + args.get(1) + "' is not a valid IPv4 address, using default address: " + this.address);
+					}
+				}
+				else {
+					System.out.println("First parameter is not -address or -a, using default address: " + this.address);
 				}
 			default:
 				break;
@@ -95,5 +117,17 @@ public class Connection {
 
 	public void setConnected(Boolean connected) {
 		this.connected = connected;
+	}
+	
+	public static final boolean checkIPv4(final String ip) {
+	    boolean isIPv4;
+	    try {
+	    final InetAddress inet = InetAddress.getByName(ip);
+	    isIPv4 = inet.getHostAddress().equals(ip)
+	            && inet instanceof Inet4Address;
+	    } catch (final UnknownHostException e) {
+	    isIPv4 = false;
+	    }
+	    return isIPv4;
 	}
 }
