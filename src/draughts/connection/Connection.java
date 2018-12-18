@@ -1,8 +1,10 @@
 package draughts.connection;
 
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -76,7 +78,18 @@ public class Connection {
 	public void connect(MainWindow mainWindow) {
 		try {
 			this.mainWindow = mainWindow;
-			socket = new Socket(address, localPort);	
+			
+			socket = new Socket();
+			
+			try {
+				InetSocketAddress isa = new InetSocketAddress(address, localPort);
+				socket.connect(isa, 2 * 1000); 
+			}
+			catch (Exception e) {
+				System.out.println(e);
+				connected = false;
+				return;
+			}
 			
 			reader = new Reader(socket, mainWindow, this);
 			threadReader = new Thread(reader);
