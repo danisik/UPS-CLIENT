@@ -251,13 +251,18 @@ Každý klient má svůj vlastní desktriptor, který mu naslouchá a stará se 
 \label{Vytvoření_nové_hry}
 Klient po přihlášení na server má možnost se připojit do fronty hráčů, kteří chtějí hrát hru. Pokud jsou ve frontě alespoň 2 hráči, server vybere posledního hráče, který chce hrát a náhodně z fronty druhého hráče a spojí je do jedné hry. Každému klientovy bude náhodně přiřazena barva a odeslána zpráva s jejich barvou a ID hrou.
 %% SUBSUBSECTION %%
-\subsubsection{Připojení do rozehrané hry}
-\label{Připojení_do_rozehrané_hry}
-Pokud klient vypadne, přejde do stavu \textit{disconnect} a spustí se timeout, který je nastavený na \textbf{10 minut}. Pokud se do té doby klient pod stejným jménem přihlásí, bude vpuštěn do rozehrané hry, ve které byl před tím, než ztratil spojení. Server tomuto klientovy odešle ID hry, počet figurek a jejich pozice, barvu a typ, aby se klient mohl ihned zapojit do hry.
-%% SUBSUBSECTION %%
 \subsubsection{Konec hry}
 \label{Konec_hry}
 Když hra skončí korektně (jeden hráč sebere všechny figurky tomu druhému), tak je na serveru vyhodnoceno kdo vyhrál/prohrál nebo zda je remíza a jednotlivé výsledky jsou rozeslány hráčům. Ti mají možnost hrát znovu či nikoliv. Pokud by se jeden z hráčů během hry odpojil ze hry tím, že ukončí klienta i přes to, že mu spojení se serverem funguje, je hra ukončena, druhý hráč informován o tom, že oponent odešel ze hry a automaticky vyhrává.
+\subsubsection{Chybové řízení}
+\label{Chybove_rizeni}
+Kontrola příchozích dat: Server po přijmutí dat je zkontroluje, zda obsahují alespoň jeden středník (oddělovač informací v datech). Pokud je středník na indexu 1 - 20, data jsou správná a dále s nimi pracujeme, jinak data označíme za nevalidní a dále s nimi nepracujeme.
+\newline
+Jakmile na server přijdou validní data (ve správném formátu, lze rozdělit text na několik částí pomocí znaku \textit{;}), server zkontroluje první část dat, zda obsahuje jedno z klíčových slov viz \ref{Server_Formáty_zpráv}. Pokud ano, tak server dále kontroluje stav klienta ve kterém se nachází a zda tuto instrukci může provést (př. Klient je v rozehrané hře a pošle zprávu, která má klienta přihlásit. Bez patřičných ošetření se klient znovu přihlásí i přes to, že už se jednou přihlašoval.). Pokud je klient ve stavu, který neumožňuje vykonat zadanou instrukci, tak zprávu označíme za nevalidní a dále s ní nepracujeme. Tento způsob je aplikován i na straně klienta.
+\newline
+Ztráta spojení: Pokud klient ztratí spojení ser serverem (metoda \textbf{recv()} vrátí hodnotu 0), přejde do stavu \textit{disconnect} a spustí se časovač, který je nastavený na \textbf{5 minut}. Pokud se do té doby klient pod stejným jménem přihlásí, bude vpuštěn do rozehrané hry, ve které byl před tím, než ztratil spojení. Server tomuto klientovy odešle ID hry, počet figurek a jejich pozice, barvu a typ, aby se klient mohl ihned zapojit do hry.
+\newline
+Jestliže se klient do 5 minut nepřipojí (pomocí návratové hodnoty metody \textbf{select()}, která je rovna 0 v případě timeoutu), server ho vymaže z pole připojených hráčů, případně ukončí rozehranou hru, jestliže se klient nacházel uprostřed rozehrané hry a uvolní klientovo dříve zadané jméno. 
 %% SECTION %%
 \section{Uživatelská dokumentace}
 \label{Uživatelská_dokumentace}
@@ -268,7 +273,7 @@ Přeložení zdrojových souborů se provádí zadáním příkazu \textit{make}
  %% SUBSECTION %%
 \subsection{Spuštění serveru}
 \label{Spuštění_serveru}
-Server se spouští pomocí příkazu \textit{./server -port [port\_ID]}, kde \textit{port\_ID} je číslo portu v rozsahu 1024 - 65535, na kterém bude server naslouchat.
+Server se spouští pomocí příkazu \textit{./server -address [IPv4] -port [port\_ID]}, kde \textit{IPv4} je validní IPv4 adresa, které bude server naslouchat (pokud je potřeba naslouchat všem, tak tento parametr se nezadává) a \textit{port\_ID} je číslo portu v rozsahu 1024 - 65535, na kterém bude server naslouchat (defaultní port je 10000). 
  %% SUBSECTION %%
 \subsection{Spuštění klienta}
 \label{Spuštění_klienta}
@@ -281,7 +286,7 @@ Po spuštění .jar souboru se otevře přihlašovací okno, kde se zadá jméno
 \caption{Přihlašování}
 \label{fig:login}
 \end {figure}
-\newline
+\newpage
 Po přihlášení se dostaneme do lobby okna, ve kterém po kliknutí na tlačítko \textit{Play} budete přidáni do fronty pro hráče čekající na hru. Pokud ve frontě budou alespoň 2 hráči, budete přiřazeni do hry.
 \begin {figure}[h]
 \centering
