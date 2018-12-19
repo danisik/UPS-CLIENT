@@ -93,7 +93,7 @@ public class MainWindow {
 	
 	public MainWindow(Stage stage, List<String> args) {
 		this.connection = new Connection(args);
-		this.connection.connect(this);
+		//this.connection.connect(this);
 		this.primaryStage = createLoginStage(stage);
 	}
 	
