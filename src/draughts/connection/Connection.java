@@ -12,6 +12,8 @@ import java.util.List;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 
 public class Connection {
@@ -109,9 +111,17 @@ public class Connection {
 	
 	public void write(Message message) {
 		try {
-			writer.write(message.toString());
-			writer.flush();
-			System.out.println("Writed message: " + message.toString());
+			if (portAvailable()) {
+				writer.write(message.toString());
+				writer.flush();
+				System.out.println("Writed message: " + message.toString());	
+			}
+			else {
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setHeaderText("Port is blocked");
+				alert.setContentText("Port is blocked");
+				alert.showAndWait();
+			}
 		} 
 		catch (NullPointerException e) {
 			System.out.println("No message send");
@@ -124,6 +134,20 @@ public class Connection {
 		}
 	}
 
+	
+	public boolean portAvailable() {
+		Socket socket = new Socket();
+		try {
+			InetSocketAddress isa = new InetSocketAddress(this.address, this.localPort);
+			socket.connect(isa, 2 * 1000);
+			socket.close();
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+	
 	public Boolean getConnected() {
 		return connected;
 	}
@@ -135,11 +159,11 @@ public class Connection {
 	public static final boolean checkIPv4(final String ip) {
 	    boolean isIPv4;
 	    try {
-	    final InetAddress inet = InetAddress.getByName(ip);
-	    isIPv4 = inet.getHostAddress().equals(ip)
-	            && inet instanceof Inet4Address;
-	    } catch (final UnknownHostException e) {
-	    isIPv4 = false;
+	    	final InetAddress inet = InetAddress.getByName(ip);
+	    	isIPv4 = inet.getHostAddress().equals(ip) && inet instanceof Inet4Address;
+	    } 
+	    catch (final UnknownHostException e) {
+	    	isIPv4 = false;
 	    }
 	    return isIPv4;
 	}

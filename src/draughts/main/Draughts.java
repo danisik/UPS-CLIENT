@@ -10,7 +10,7 @@ public class Draughts extends Application {
 	}
 	
 	@Override
-	public void start(Stage stage) throws Exception {	
+	public void start(Stage stage) throws Exception {			
 		MainWindow window = new MainWindow(stage, this.getParameters().getRaw());
 		window.Show();
 	}
