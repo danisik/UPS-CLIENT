@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import draughts.enums.Messages;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
 import javafx.application.Platform;
@@ -27,6 +28,7 @@ public class Connection {
 	
 	private Reader reader = null;
 	private Thread threadReader = null;
+	private Connectivity connectivity = null;
 	
 	private Boolean connected = false;
 
@@ -99,6 +101,9 @@ public class Connection {
 			
 			writer = new OutputStreamWriter(socket.getOutputStream());
 			
+			connectivity = new Connectivity(mainWindow, this);
+			connectivity.start();
+			
 			inetAddr = socket.getInetAddress();
 			System.out.println("Connection to address: " + inetAddr.getHostAddress() + " with name: " + inetAddr.getHostName() + " and port: " + localPort);
 			connected = true;
@@ -117,10 +122,13 @@ public class Connection {
 				System.out.println("Writed message: " + message.toString());	
 			}
 			else {
-				Alert alert = new Alert(AlertType.ERROR);
-				alert.setHeaderText("Port is blocked");
-				alert.setContentText("Port is blocked");
-				alert.showAndWait();
+				if ((!(message.name.toString().equals(Messages.CLIENT_APP_END.toString()))) 
+						&& (!(message.name.toString().equals(Messages.SERVER_IS_CONNECTED.toString())))) {
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setHeaderText("Port is blocked");
+					alert.setContentText("Port is blocked");
+					alert.showAndWait();
+				}
 			}
 		} 
 		catch (NullPointerException e) {

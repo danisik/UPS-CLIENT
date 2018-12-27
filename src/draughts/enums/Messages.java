@@ -8,6 +8,8 @@ public enum Messages {
 	CLIENT_NEXT_GAME_NO("new_game_no"),
 	CLIENT_APP_END("app_end"),
 	
+	SERVER_ALREADY_WANNA_PLAY("already_wanna_play"),
+	SERVER_IS_CONNECTED("is_connected"),
 	SERVER_LOGIN_OK("login_ok"),
 	SERVER_LOGIN_FALSE("login_false"),
 	SERVER_START_GAME("start_game"),

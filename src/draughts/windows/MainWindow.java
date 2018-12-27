@@ -44,6 +44,8 @@ public class MainWindow {
 	private String firstColor = "";
 	private String firstPiece = "";
 	private Boolean opp_connection_lost = false;
+	private Boolean login_processed = false;
+	private Boolean play_processed = false;
 	
 	//login
 	Label nameOfGame = new Label(Constants.gameTitle);
@@ -152,11 +154,19 @@ public class MainWindow {
 		nameOfPlayer.setFont(new Font(20));
 		nameOfPlayer.setText(getClient().getName());		
 		nameOfPlayer.setTextFill(javafx.scene.paint.Color.web(Color.Blue.getHexColor()));
-		play.setDisable(false);
-		play.setText("Play");
-		play.setOnAction(event -> {
-			play();
-		});
+		
+		if (play_processed) {
+			client.setState(States.WANNA_PLAY);
+			play.setDisable(true);
+			play.setText("Queued");
+		}
+		else {
+			play.setDisable(false);
+			play.setText("Play");
+			play.setOnAction(event -> {
+				play();
+			});	
+		}
 		
 		GridPane lobbyPane = new GridPane();
 		lobbyPane.setHgap(5);
@@ -201,9 +211,13 @@ public class MainWindow {
 		info.setVgap(20);
 		
 		if (getClient().getColor().toString().equals(draughts.enums.Color.White.toString())) {
+			client.setState(States.YOU_PLAYING);
 			player = Constants.playerYou;
 		}
-		else player = Constants.playerOpponent;
+		else {
+			player = Constants.playerOpponent;
+			client.setState(States.OPPONENT_PLAYING);
+		}
 		nowPlaying = new Label("Now playing: " + player);
 		
 		info.add(infoPlayerName, 1, 2);
@@ -383,8 +397,11 @@ public class MainWindow {
 			return;
 		}
 		else {
-			setClient(new Client(name));
-			connection.write(new Client_Login(name));
+			if (!login_processed) {
+				login_processed = true;
+				setClient(new Client(name));
+				connection.write(new Client_Login(name));	
+			}
 		}
 	}
 	
@@ -397,6 +414,7 @@ public class MainWindow {
 			alert.setContentText(message.getMessage());
 			alert.setResizable(true);
 			alert.show();
+			login_processed = false;
 			return;
 		}
 		else {			
@@ -416,6 +434,12 @@ public class MainWindow {
 			alert.setHeaderText("Server is currently offline");
 			alert.setContentText("Server is currently offline");
 			alert.setResizable(true);
+			alert.show();
+			return;
+		}
+		else if (!connection.portAvailable()) {			
+			alert.setHeaderText("Connection lost or port is blocked");
+			alert.setContentText("Connection lost or port is blocked");
 			alert.show();
 			return;
 		}
@@ -453,6 +477,9 @@ public class MainWindow {
 	public void quit() {
 		try {
 			this.primaryStage.fireEvent(new WindowEvent(this.primaryStage, WindowEvent.WINDOW_CLOSE_REQUEST));	
+			this.primaryStage.close();
+			Platform.exit();
+			System.exit(0);
 		}
 		catch (Exception e) {
 			this.primaryStage.close();
@@ -553,7 +580,18 @@ public class MainWindow {
 		
 		this.primaryStage = createBoardStage(this.primaryStage, Integer.parseInt(values[3]));
 		
-		this.nowPlaying.setText(values[5]);
+		switch(values[5]) {
+			case "you":
+				player = Constants.playerYou;
+				client.setState(States.YOU_PLAYING);
+				break;
+			case "opponent":
+				player = Constants.playerOpponent;
+				client.setState(States.OPPONENT_PLAYING);
+				break;
+		}
+		
+		this.nowPlaying.setText("Now playing: " + player);
 		
 		inicialize_images();
 		
@@ -605,12 +643,11 @@ public class MainWindow {
 		alert.setContentText("Please wait until opponent restore his connection");
 		alert.show();
 		alert.setResizable(true);
-		while(opp_connection_lost) {
-			if (!alert.isShowing()) {
-				alert.show();
-			}
-		}
-		alert.close();
+	}
+	
+	public void opponent_connection_restored() {
+		opp_connection_lost = false;
+		Alert alert = new Alert(AlertType.WARNING);
 		alert.setAlertType(AlertType.INFORMATION);
 		alert.setHeaderText("Opponent restore connection");
 		alert.setContentText("Opponent is now ready to play!");
@@ -618,8 +655,8 @@ public class MainWindow {
 		alert.setResizable(true);
 	}
 	
-	public void opponent_connection_restored() {
-		opp_connection_lost = false;
+	public void already_wanna_play() {
+		this.play_processed = true;
 	}
 	
 	//------------------------------------------
@@ -637,6 +674,22 @@ public class MainWindow {
 	}
 	
 	public void fieldClicked(int row, int col) {
+		if (!connection.portAvailable()) {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setHeaderText("Connection lost or port is blocked");
+			alert.setContentText("Connection lost or port is blocked");
+			alert.showAndWait();
+			this.quit();			
+		}
+		
+		if (opp_connection_lost) {
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setHeaderText("Opponent lost connection");
+			alert.setContentText("Please wait until opponent restore his connection");
+			alert.show();
+			alert.setResizable(true);
+			return;
+		}
 		
 		if (player.equals(Constants.playerOpponent)) {
 			Alert alert = new Alert(AlertType.WARNING);
@@ -673,7 +726,7 @@ public class MainWindow {
 			infoTypeColor.setText("type: " + typeName + ", color: " + colorName);
 			
 			if (firstClicked) {
-				connection.write(new Client_Move(game_ID, firstRow, firstCol, row, col, firstColor, firstPiece));				
+				connection.write(new Client_Move(game_ID, firstRow, firstCol, row, col, firstColor, firstPiece));		
 				firstRow = -1;
 				firstCol = -1;
 				firstClicked = false;
