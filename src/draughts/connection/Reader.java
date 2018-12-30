@@ -76,12 +76,14 @@ public class Reader implements Runnable {
 		switch(messages) {
 			case SERVER_IS_CONNECTED:
 				connection.write(new Client_Is_Connected());
+				mainWindow.getClient().setConnected(true);
 				break;
 			case SERVER_LOGIN_OK:
 				if (mainWindow.getClient().getState() == States.LOGGING) {
 					Platform.runLater(() -> {
 						mainWindow.processLogin(new Server_Login_OK());
 						mainWindow.getClient().setState(States.IN_LOBBY);
+						mainWindow.getClient().setConnected(true);
 					});
 				}
 				break;

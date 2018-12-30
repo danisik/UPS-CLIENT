@@ -26,10 +26,11 @@ public class Connectivity extends Thread {
 	
 	@Override
 	public void run() {
-		while(connection.portAvailable()) {
+		while(mainWindow.getClient().isConnected()) {
 			try {
+				mainWindow.getClient().setConnected(false);
 				System.out.println("Connectivity active");
-				Connectivity.sleep(10 * 1000);
+				Connectivity.sleep(15 * 1000);
 			} catch (InterruptedException e) {
 				Platform.runLater(() -> {
 					Alert alert = new Alert(AlertType.ERROR);

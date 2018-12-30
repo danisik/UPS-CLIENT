@@ -5,11 +5,13 @@ import java.io.OutputStreamWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.List;
 
 import draughts.enums.Messages;
+import draughts.enums.States;
 import draughts.messages.*;
 import draughts.windows.MainWindow;
 import javafx.application.Platform;
@@ -101,9 +103,6 @@ public class Connection {
 			
 			writer = new OutputStreamWriter(socket.getOutputStream());
 			
-			connectivity = new Connectivity(mainWindow, this);
-			connectivity.start();
-			
 			inetAddr = socket.getInetAddress();
 			System.out.println("Connection to address: " + inetAddr.getHostAddress() + " with name: " + inetAddr.getHostName() + " and port: " + localPort);
 			connected = true;
@@ -144,10 +143,10 @@ public class Connection {
 
 	
 	public boolean portAvailable() {
-		Socket socket = new Socket();
 		try {
-			InetSocketAddress isa = new InetSocketAddress(this.address, this.localPort);
-			socket.connect(isa, 2 * 1000);
+			Socket socket = new Socket();
+			InetSocketAddress isa = new InetSocketAddress(address, localPort);
+			socket.connect(isa, 10 * 1000);
 			socket.close();
 			return true;
 		}
@@ -174,5 +173,13 @@ public class Connection {
 	    	isIPv4 = false;
 	    }
 	    return isIPv4;
+	}
+
+	public Connectivity getConnectivity() {
+		return connectivity;
+	}
+
+	public void setConnectivity(Connectivity connectivity) {
+		this.connectivity = connectivity;
 	}
 }

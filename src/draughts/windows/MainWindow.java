@@ -255,7 +255,7 @@ public class MainWindow {
 		newGameNo.setOnAction(event -> {
 			connection.write(new Client_Next_Game_No());
 			connection.closeConnection();	
-			quit();
+			System.exit(0);
 		});
 		
 		String fullText = "";
@@ -424,6 +424,8 @@ public class MainWindow {
 			alert.setContentText("Login was successful.");
 			alert.setResizable(true);
 			alert.show();
+			connection.setConnectivity(new Connectivity(this, connection));
+			connection.getConnectivity().start();
 			return;
 		}
 	}
@@ -445,6 +447,7 @@ public class MainWindow {
 		}
 		else {
 			connection.write(new Client_Play_Game());
+			this.play_processed = true;
 			client.setState(States.WANNA_PLAY);
 			play.setDisable(true);
 			play.setText("Queued");
@@ -470,8 +473,9 @@ public class MainWindow {
 	}
 	
 	public void wanna_play_next() {
-		this.primaryStage = createLobbyStage(this.primaryStage);
 		this.client.setState(States.IN_LOBBY);
+		this.play_processed = false;
+		this.primaryStage = createLobbyStage(this.primaryStage);
 	}
 	
 	public void quit() {
