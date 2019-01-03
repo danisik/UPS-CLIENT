@@ -37,7 +37,7 @@ public class Reader implements Runnable {
 			try { 
 				message = reader.readLine();
 				if (message != null) {
-					System.out.println("Message Received: " + message);
+					if (!message.contains("is_connected")) System.out.println("Message Received: " + message);
 					processMessage(message);
 				}
 				else {
@@ -76,14 +76,14 @@ public class Reader implements Runnable {
 		switch(messages) {
 			case SERVER_IS_CONNECTED:
 				connection.write(new Client_Is_Connected());
-				mainWindow.getClient().setConnected(true);
+				mainWindow.getClient().setCheckingConnected(true);
 				break;
 			case SERVER_LOGIN_OK:
 				if (mainWindow.getClient().getState() == States.LOGGING) {
 					Platform.runLater(() -> {
 						mainWindow.processLogin(new Server_Login_OK());
 						mainWindow.getClient().setState(States.IN_LOBBY);
-						mainWindow.getClient().setConnected(true);
+						mainWindow.getClient().setCheckingConnected(true);
 					});
 				}
 				break;
@@ -195,7 +195,7 @@ public class Reader implements Runnable {
 				}
 				break;
 			case SERVER_RESTORE_BOARD:
-				if (mainWindow.getClient().getState() == States.LOGGING) {
+				if (mainWindow.getClient().getState() == States.LOGGING || mainWindow.getClient().getState() == States.DISCONNECT) {
 					Platform.runLater(() -> {
 						mainWindow.restoreBoard(values);
 					});

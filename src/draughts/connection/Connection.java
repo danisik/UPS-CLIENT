@@ -115,17 +115,17 @@ public class Connection {
 	
 	public void write(Message message) {
 		try {
-			if (portAvailable()) {
+			if (mainWindow.getClient().isConnected()) {
 				writer.write(message.toString());
 				writer.flush();
-				System.out.println("Writed message: " + message.toString());	
+				if (message.name != Messages.SERVER_IS_CONNECTED) System.out.println("Writed message: " + message.toString());	
 			}
 			else {
 				if ((!(message.name.toString().equals(Messages.CLIENT_APP_END.toString()))) 
 						&& (!(message.name.toString().equals(Messages.SERVER_IS_CONNECTED.toString())))) {
 					Alert alert = new Alert(AlertType.ERROR);
-					alert.setHeaderText("Port is blocked");
-					alert.setContentText("Port is blocked");
+					alert.setHeaderText("Connection lost or Port is blocked");
+					alert.setContentText("Connection lost or Port is blocked");
 					alert.showAndWait();
 				}
 			}
@@ -144,13 +144,11 @@ public class Connection {
 	
 	public boolean portAvailable() {
 		try {
-			Socket socket = new Socket();
-			InetSocketAddress isa = new InetSocketAddress(address, localPort);
-			socket.connect(isa, 10 * 1000);
-			socket.close();
+			writer.write("test;\n");
+			writer.flush();
 			return true;
 		}
-		catch (Exception e) {
+		catch (IOException e) {
 			return false;
 		}
 	}

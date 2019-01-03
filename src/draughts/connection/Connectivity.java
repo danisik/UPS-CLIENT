@@ -18,6 +18,7 @@ public class Connectivity extends Thread {
 
 	private MainWindow mainWindow = null;
 	private Connection connection = null;
+	private int timeLostConnection = 0;
 	
 	public Connectivity(MainWindow mainWindow, Connection connection) {
 		this.connection = connection;
@@ -26,21 +27,63 @@ public class Connectivity extends Thread {
 	
 	@Override
 	public void run() {
-		while(mainWindow.getClient().isConnected()) {
-			try {
+		while(true) {
+			if (!mainWindow.getClient().isCheckingConnected()) {				
+				if (timeLostConnection == 0) {
+					System.out.println("Connection lost, trying to reconnect");
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.ERROR);
+						alert.setHeaderText("Connection lost");
+						alert.setContentText("Connection lost");
+						alert.showAndWait();
+					});	
+				}
 				mainWindow.getClient().setConnected(false);
-				System.out.println("Connectivity active");
-				Connectivity.sleep(15 * 1000);
+				mainWindow.getClient().setState(States.DISCONNECT);
+				timeLostConnection += 1;
+			}
+			else {
+				if (timeLostConnection > 0) {
+					System.out.println("Connectivity ok");
+					Platform.runLater(() -> {
+						Alert alert = new Alert(AlertType.INFORMATION);
+						alert.setHeaderText("Connection restored");
+						alert.setContentText("Connection restored");
+						alert.showAndWait();
+						
+						if (mainWindow.stages == Stages.LOBBY) {
+							mainWindow.play.setDisable(false);
+							mainWindow.play.setText("Play");
+							mainWindow.play_processed = false;
+							mainWindow.getClient().setState(States.IN_LOBBY);
+							mainWindow.play.setOnAction(event -> {
+								mainWindow.play();
+							});		
+						}
+						else if (mainWindow.stages == Stages.ASK) {
+							mainWindow.getClient().setState(States.YOU_PLAYING);
+						}
+					});
+				}
+				
+				timeLostConnection = 0;
+				mainWindow.getClient().setCheckingConnected(false);
+				mainWindow.getClient().setConnected(true);
+			}
+			
+			try {
+				Connectivity.sleep(1 * 1000);
 			} catch (InterruptedException e) {
 				Platform.runLater(() -> {
 					Alert alert = new Alert(AlertType.ERROR);
-					alert.setHeaderText("Connection lost");
-					alert.setContentText("Connection lost");
+					alert.setHeaderText("Timeout");
+					alert.setContentText("Timeout, closing app");
 					alert.showAndWait();
-					end();
 				});
 			}
+			if (timeLostConnection == 120) break;
 		}
+		
 		System.out.println("Connectivity lost");
 		Platform.runLater(() -> {
 			Alert alert = new Alert(AlertType.ERROR);

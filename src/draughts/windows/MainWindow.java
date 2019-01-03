@@ -37,6 +37,7 @@ public class MainWindow {
 	private Connection connection = null;
 	private Client client = null;
 	private int game_ID = -1;
+	public Stages stages = Stages.LOGIN;
 	
 	private Boolean firstClicked = false;
 	private int firstRow = -1;
@@ -45,18 +46,18 @@ public class MainWindow {
 	private String firstPiece = "";
 	private Boolean opp_connection_lost = false;
 	private Boolean login_processed = false;
-	private Boolean play_processed = false;
+	public Boolean play_processed = false;
 	
 	//login
-	Label nameOfGame = new Label(Constants.gameTitle);
-	Label loginLabel = new Label(Constants.loginName);
-	Button login = new Button(Constants.buttonLogin);
-	TextField enterName = new TextField();
+	public Label nameOfGame = new Label(Constants.gameTitle);
+	public Label loginLabel = new Label(Constants.loginName);
+	public Button login = new Button(Constants.buttonLogin);
+	public TextField enterName = new TextField();
 	
 	//lobby
-	Label nameOfPlayer = new Label();
-	Label name = new Label("Your name: ");
-	Button play = new Button("Play");
+	public Label nameOfPlayer = new Label();
+	public Label name = new Label("Your name: ");
+	public Button play = new Button("Play");
 	
 	//board
 	private static InputStream streamWhite = null;
@@ -72,13 +73,13 @@ public class MainWindow {
 	private static InputStream streamBlackWhiteKing = null;	
 	private static Image imgBlackWhiteKing = null;
 	
-	GridPane board = new GridPane();
-	String player = null;
-	Label nowPlaying;
-	Label infoRowCol = new Label("row: NA, col: NA");
-	Label infoTypeColor = new Label("type: NA, color: NA");
-	Label infoPlayerColor = new Label();
-	Label infoPlayerName = new Label();
+	public GridPane board = new GridPane();
+	public String player = null;
+	public Label nowPlaying;
+	public Label infoRowCol = new Label("row: NA, col: NA");
+	public Label infoTypeColor = new Label("type: NA, color: NA");
+	public Label infoPlayerColor = new Label();
+	public Label infoPlayerName = new Label();
 	//10x10 board, 4x5 pieces per player, white starts, pieces starts staying on black field
 	int piecesCountPerRow = 5;
 	int piecesRow = 2;
@@ -88,15 +89,17 @@ public class MainWindow {
 	Message message = null;
 	
 	//ask
-	Label result = new Label();
-	Label infoResult = new Label("Do you want play another game ?");
-	Button newGameYes = new Button("Yes");
-	Button newGameNo = new Button("No");
+	public Label result = new Label();
+	public Label infoResult = new Label("Do you want play another game ?");
+	public Button newGameYes = new Button("Yes");
+	public Button newGameNo = new Button("No");
 	
 	public MainWindow(Stage stage, List<String> args) {
 		this.connection = new Connection(args);
 		//this.connection.connect(this);
 		this.primaryStage = createLoginStage(stage);
+		this.client = new Client("");
+		client.setConnected(true);
 	}
 	
 	public void Show() {
@@ -148,6 +151,7 @@ public class MainWindow {
 	}	
 	
 	public Stage createLobbyStage(Stage stage) {
+		this.stages = Stages.LOBBY;
 		stage = onCloseEvent(stage);
 		play.setMaxWidth(75);
 		nameOfGame.setFont(new Font(20));
@@ -188,6 +192,7 @@ public class MainWindow {
 	}
 	
 	public Stage createBoardStage(Stage stage, int game_ID) {
+		this.stages = Stages.BOARD;
 		this.game_ID = game_ID;
 		stage = onCloseEvent(stage);
 		
@@ -240,6 +245,7 @@ public class MainWindow {
 	}
 	
 	public Stage createAskStage(Stage stage, String yourResult) {
+		this.stages = Stages.ASK;
 		stage = onCloseEvent(stage);
 		
 		GridPane info = new GridPane();
@@ -399,7 +405,7 @@ public class MainWindow {
 		else {
 			if (!login_processed) {
 				login_processed = true;
-				setClient(new Client(name));
+				client.setName(name);
 				connection.write(new Client_Login(name));	
 			}
 		}
@@ -439,9 +445,9 @@ public class MainWindow {
 			alert.show();
 			return;
 		}
-		else if (!connection.portAvailable()) {			
-			alert.setHeaderText("Connection lost or port is blocked");
-			alert.setContentText("Connection lost or port is blocked");
+		else if (!client.isConnected()) {			
+			alert.setHeaderText("Connection lost or Port is blocked");
+			alert.setContentText("Connection lost or Port is blocked");
 			alert.show();
 			return;
 		}
@@ -678,10 +684,10 @@ public class MainWindow {
 	}
 	
 	public void fieldClicked(int row, int col) {
-		if (!connection.portAvailable()) {
+		if (!client.isConnected()) {
 			Alert alert = new Alert(AlertType.ERROR);
-			alert.setHeaderText("Connection lost or port is blocked");
-			alert.setContentText("Connection lost or port is blocked");
+			alert.setHeaderText("Connection lost or Port is blocked");
+			alert.setContentText("Connection lost or Port is blocked");
 			alert.showAndWait();
 			this.quit();			
 		}

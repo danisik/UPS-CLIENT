@@ -7,7 +7,8 @@ public class Client {
 	private String name = "";
 	private Color color = null;
 	private States state = States.LOGGING;
-	private boolean connected = false;
+	private boolean checkingConnected = false;
+	private boolean connected = true;
 	
 	public Client(String name) {
 		this.name = name;
@@ -35,6 +36,14 @@ public class Client {
 
 	public void setState(States state) {
 		this.state = state;
+	}
+
+	public boolean isCheckingConnected() {
+		return checkingConnected;
+	}
+
+	public void setCheckingConnected(boolean connected) {
+		this.checkingConnected = connected;
 	}
 
 	public boolean isConnected() {
